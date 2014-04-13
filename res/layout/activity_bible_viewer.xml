@@ -4,7 +4,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.bspeice.minimalbible.MainActivity" >
+    tools:context="org.bspeice.minimalbible.BibleViewer" >
 
     <!--
          As the main content view, the view below consumes the entire
