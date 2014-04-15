@@ -12,6 +12,9 @@ Core:
 -----
 These are the tasks that will need to be accomplished before the 1.0 major release.
 
+* Project setup
+	* Add the appcompat project to the Git repository
+
 * Integration with JSword
     * Build JSword
     * Distribute an Android binary that contains JSword and 3rd party libraries
