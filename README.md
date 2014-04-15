@@ -83,6 +83,7 @@ These are the tasks that will need to be accomplished before the 1.0 major relea
     * Text font/size
     * Clear searches?
     * Disable red-letter?
+    * Send feedback
 
 * Home screen
     * Allow access to settings, download manager, and Bible Viewer
