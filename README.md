@@ -35,7 +35,8 @@ These are the tasks that will need to be accomplished before the 1.0 major relea
     * Can use navigation drawer to open a book
     * Infinite scroll between chapters
         * Research how to accomplish infinite scroll
-        * Implement infinite scroll  
+        * Implement infinite scroll
+    * Red letter enabled
 
 **Release v.1 to Play store**
 
@@ -46,6 +47,8 @@ These are the tasks that will need to be accomplished before the 1.0 major relea
     * Search functionality implemented
         * Get Lucene search working (included in JSword)
         * Tweak search (fuzzy? Lord -> LORD? Are we actually getting results we want?)
+    * Search history recorded
+        * Record when search took place?
 
 **Release v.2**
 
@@ -56,8 +59,9 @@ These are the tasks that will need to be accomplished before the 1.0 major relea
 
 * Footnotes/Commentaries
     * UI design finalized
-        * Frame on bottom of Bible Viewer a la http://blog.neteril.org/blog/2013/10/10/framelayout-your-best-ui-friend/ ?
+        * Frame on bottom of Bible Viewer a la [this](http://blog.neteril.org/blog/2013/10/10/framelayout-your-best-ui-friend/)?
         * Switch between footnotes/commentaries by swiping on panel?
+        * Right-side nav drawer like FB?
         * Can we synchronize scroll between commentaries/footnotes?
         * Should Bible search also search commentaries?
     * Implement/Show commentaries/footnotes
@@ -74,6 +78,8 @@ These are the tasks that will need to be accomplished before the 1.0 major relea
     * Night mode?
     * Automatic night mode?
     * Text font/size
+    * Clear searches?
+    * Disable red-letter?
 
 * Home screen
     * Allow access to settings, download manager, and Bible Viewer
@@ -82,3 +88,67 @@ These are the tasks that will need to be accomplished before the 1.0 major relea
 **Party!**
 
 * * *
+
+Feature Addition
+----------------
+
+These are features I want to add, but are not considered part of the "core" product. Many (most) are necessary features of a modern app, but follow after the first major release.
+
+### Usage statistics
+* Include usage statistics?
+    * Only send statistics on WiFi?
+    * Disable by default? Prompt user?
+
+### Sharing
+* UI Design finalized
+    * Click on text to select it, then share?
+    * Long-click text to share?
+    * Share currently active text?
+    * Dialog to select what range of text is included?
+    * Share commentary/footnotes?
+* Intent filter created to share via FB, email, etc.
+* Settings
+    * Share link to app alongside text? Allow disabling?
+
+* * *
+
+### Highlighting
+* UI Design finalized
+    * Click on text to select like share?
+    * Highlight colors / custom colors?
+    * Multiple highlight colors?
+    * Remove highlights?
+
+* Database backing
+    * First feature to need a database! Success!
+    * How to store sections of highlighted material?
+    * Store start/end range, along with highlight color?
+    * Store when highlight was created?
+
+* Bible Viewer
+    * How to show highlights?
+        * More specifically, how does showing highlights impact performance on start?
+        * Show text first, then highlights after loaded?
+
+* * *
+
+### Notes
+* UI Design finalized
+    * Likely very similar to highlighting
+
+* Database backing
+    * Likely very similar to highlighting
+    * Store note instead of highlight color?
+    * Store when note was created / updated?
+
+* Bible Viewer
+    * Same concerns as highlighting, how does it impact speed?
+    * How do we display notes? Highlighting changes background color, have a separate link for our notes?
+    * Do notes get added to a panel on bottom? Can user browse notes?
+
+* Home Screen
+    * Notes browser
+
+* * *
+
+Plenty to get done!
