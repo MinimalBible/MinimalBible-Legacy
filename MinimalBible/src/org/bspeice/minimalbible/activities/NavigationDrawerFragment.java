@@ -1,4 +1,12 @@
-package org.bspeice.minimalbible;
+package org.bspeice.minimalbible.activities;
+
+import org.bspeice.minimalbible.R;
+import org.bspeice.minimalbible.R.drawable;
+import org.bspeice.minimalbible.R.id;
+import org.bspeice.minimalbible.R.layout;
+import org.bspeice.minimalbible.R.menu;
+import org.bspeice.minimalbible.R.string;
+import org.bspeice.minimalbible.activities.downloader.DownloaderActivity;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
@@ -9,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;

@@ -1,8 +1,12 @@
 package org.bspeice.minimalbible;
 
+import org.bspeice.minimalbible.activities.NavigationDrawerFragment;
+import org.bspeice.minimalbible.activities.downloader.DownloaderActivity;
+
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -106,6 +110,8 @@ public class BibleViewer extends ActionBarActivity implements
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
+		} else if (id == R.id.action_downloads) {
+			startActivity(new Intent(this, DownloaderActivity.class));
 		}
 		return super.onOptionsItemSelected(item);
 	}

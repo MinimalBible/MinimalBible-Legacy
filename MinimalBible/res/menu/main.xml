@@ -12,5 +12,10 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
+        
+    <item
+        android:id="@+id/action_downloads"
+        android:orderInCategory="100"
+        android:title="@string/title_activity_downloader" />
 
 </menu>
