@@ -155,4 +155,23 @@ These are features I want to add, but are not considered part of the "core" prod
 
 * * *
 
+### Widgets
+
+* Text to display here?
+* Shortcut to specific verse/chapter?
+    * How to create shortcuts?
+    
+* * *
+
+### Cloud support
+
+* Backup notes/highlights to cloud service?
+* Just backup entire app database to cloud?
+* Google Drive/Dropbox?
+* Settings
+	* Automated backups?
+	* Backup on WiFi only?
+	
+* * *
+
 Plenty to get done!
