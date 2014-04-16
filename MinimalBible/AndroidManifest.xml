@@ -23,6 +23,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="org.bspeice.minimalbible.activities.downloader.DownloaderActivityOld"
+            android:label="@string/title_activity_downloader" >
+        </activity>
+        <activity
             android:name="org.bspeice.minimalbible.activities.downloader.DownloaderActivity"
             android:label="@string/title_activity_downloader" >
         </activity>

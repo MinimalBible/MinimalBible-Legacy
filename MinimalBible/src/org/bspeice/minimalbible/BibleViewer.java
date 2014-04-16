@@ -3,11 +3,8 @@ package org.bspeice.minimalbible;
 import org.bspeice.minimalbible.activities.NavigationDrawerFragment;
 import org.bspeice.minimalbible.activities.downloader.DownloaderActivity;
 
-import com.readystatesoftware.systembartint.SystemBarTintManager;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 public class BibleViewer extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
