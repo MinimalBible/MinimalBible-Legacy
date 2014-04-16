@@ -1,5 +1,10 @@
-package org.bspeice.minimalbible;
+package org.bspeice.minimalbible.activities.viewer;
 
+import org.bspeice.minimalbible.R;
+import org.bspeice.minimalbible.R.id;
+import org.bspeice.minimalbible.R.layout;
+import org.bspeice.minimalbible.R.menu;
+import org.bspeice.minimalbible.R.string;
 import org.bspeice.minimalbible.activities.BaseActivity;
 import org.bspeice.minimalbible.activities.NavigationDrawerFragment;
 import org.bspeice.minimalbible.activities.downloader.DownloadActivity;
