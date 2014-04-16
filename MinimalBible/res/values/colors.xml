@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="statusbar">#ffdddddd</color>
-    <color name="actionbar">#dddddddd</color>
+    <color name="statusbar">#dddddd</color>
+    <color name="actionbar">#dddddd</color>
 </resources>
