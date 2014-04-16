@@ -1,5 +1,6 @@
 package org.bspeice.minimalbible;
 
+import org.bspeice.minimalbible.activities.BaseActivity;
 import org.bspeice.minimalbible.activities.NavigationDrawerFragment;
 import org.bspeice.minimalbible.activities.downloader.DownloadActivity;
 
@@ -21,7 +22,7 @@ import android.widget.TextView;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
-public class BibleViewer extends ActionBarActivity implements
+public class BibleViewer extends BaseActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 
 	/**
@@ -48,13 +49,6 @@ public class BibleViewer extends ActionBarActivity implements
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
-
-		// Only set the tint if the device is running KitKat or above
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			SystemBarTintManager tintManager = new SystemBarTintManager(this);
-			tintManager.setStatusBarTintEnabled(true);
-			tintManager.setStatusBarTintColor(getResources().getColor(R.color.statusbar));
-		}
 	}
 
 	@Override
