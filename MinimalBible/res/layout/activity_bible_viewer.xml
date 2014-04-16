@@ -32,7 +32,7 @@
 
     <fragment
         android:id="@+id/navigation_drawer"
-        android:name="org.bspeice.minimalbible.activities.NavigationDrawerFragment"
+        android:name="org.bspeice.minimalbible.activities.viewer.ViewerNavDrawerFragment"
         android:layout_width="@dimen/navigation_drawer_width"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"

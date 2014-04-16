@@ -6,7 +6,7 @@ import org.bspeice.minimalbible.R.layout;
 import org.bspeice.minimalbible.R.menu;
 import org.bspeice.minimalbible.R.string;
 import org.bspeice.minimalbible.activities.BaseActivity;
-import org.bspeice.minimalbible.activities.NavigationDrawerFragment;
+import org.bspeice.minimalbible.activities.BaseNavigationDrawerFragment;
 import org.bspeice.minimalbible.activities.downloader.DownloadActivity;
 
 import android.app.Activity;
@@ -28,13 +28,13 @@ import android.widget.TextView;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 public class BibleViewer extends BaseActivity implements
-		NavigationDrawerFragment.NavigationDrawerCallbacks {
+		BaseNavigationDrawerFragment.NavigationDrawerCallbacks {
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
 	 */
-	private NavigationDrawerFragment mNavigationDrawerFragment;
+	private ViewerNavDrawerFragment mNavigationDrawerFragment;
 
 	/**
 	 * Used to store the last screen title. For use in
@@ -47,7 +47,7 @@ public class BibleViewer extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bible_viewer);
 
-		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
+		mNavigationDrawerFragment = (ViewerNavDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
 

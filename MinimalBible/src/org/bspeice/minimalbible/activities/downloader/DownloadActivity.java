@@ -3,7 +3,7 @@ package org.bspeice.minimalbible.activities.downloader;
 import org.bspeice.minimalbible.MinimalBibleConstants;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseActivity;
-import org.bspeice.minimalbible.activities.NavigationDrawerFragment;
+import org.bspeice.minimalbible.activities.BaseNavigationDrawerFragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,13 +23,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class DownloadActivity extends BaseActivity implements
-		NavigationDrawerFragment.NavigationDrawerCallbacks {
+		BaseNavigationDrawerFragment.NavigationDrawerCallbacks {
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
 	 */
-	private NavigationDrawerFragment mNavigationDrawerFragment;
+	private DownloadNavDrawerFragment mNavigationDrawerFragment;
 
 	/**
 	 * Used to store the last screen title. For use in
@@ -42,7 +42,7 @@ public class DownloadActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_download);
 
-		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
+		mNavigationDrawerFragment = (DownloadNavDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
 

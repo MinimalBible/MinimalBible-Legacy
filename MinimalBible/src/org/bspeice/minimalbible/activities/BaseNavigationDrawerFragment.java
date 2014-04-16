@@ -34,7 +34,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
  * > design guidelines</a> for a complete explanation of the behaviors
  * implemented here.
  */
-public class NavigationDrawerFragment extends Fragment {
+public class BaseNavigationDrawerFragment extends Fragment {
 
 	/**
 	 * Remember the position of the selected item.
@@ -58,14 +58,14 @@ public class NavigationDrawerFragment extends Fragment {
 	private ActionBarDrawerToggle mDrawerToggle;
 
 	private DrawerLayout mDrawerLayout;
-	private ListView mDrawerListView;
+	protected ListView mDrawerListView;
 	private View mFragmentContainerView;
 
-	private int mCurrentSelectedPosition = 0;
+	protected int mCurrentSelectedPosition = 0;
 	private boolean mFromSavedInstanceState;
 	private boolean mUserLearnedDrawer;
 
-	public NavigationDrawerFragment() {
+	public BaseNavigationDrawerFragment() {
 	}
 
 	@Override
@@ -95,29 +95,6 @@ public class NavigationDrawerFragment extends Fragment {
 		// Indicate that this fragment would like to influence the set of
 		// actions in the action bar.
 		setHasOptionsMenu(true);
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		mDrawerListView = (ListView) inflater.inflate(
-				R.layout.fragment_navigation_drawer, container, false);
-		mDrawerListView
-				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
-						selectItem(position);
-					}
-				});
-		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar()
-				.getThemedContext(), android.R.layout.simple_list_item_1,
-				android.R.id.text1, new String[] {
-						getString(R.string.title_section1),
-						getString(R.string.title_section2),
-						getString(R.string.title_section3), }));
-		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-		return mDrawerListView;
 	}
 
 	public boolean isDrawerOpen() {
@@ -214,7 +191,7 @@ public class NavigationDrawerFragment extends Fragment {
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 	}
 
-	private void selectItem(int position) {
+	public void selectItem(int position) {
 		mCurrentSelectedPosition = position;
 		if (mDrawerListView != null) {
 			mDrawerListView.setItemChecked(position, true);
@@ -275,13 +252,6 @@ public class NavigationDrawerFragment extends Fragment {
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
-
-		if (item.getItemId() == R.id.action_example) {
-			Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT)
-					.show();
-			return true;
-		}
-
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -297,7 +267,7 @@ public class NavigationDrawerFragment extends Fragment {
 		// actionBar.setTitle(R.string.app_name);
 	}
 
-	private ActionBar getActionBar() {
+	protected ActionBar getActionBar() {
 		return ((ActionBarActivity) getActivity()).getSupportActionBar();
 	}
 
