@@ -14,10 +14,12 @@ These are the tasks that will need to be accomplished before the 1.0 major relea
 
 * Project setup
 	* Add the appcompat project to the Git repository
+**Done as of d6c7f498e6e1f5bbd7895f979dc25c5537e7cae5**
 
 * Integration with JSword
     * Build JSword
     * Distribute an Android binary that contains JSword and 3rd party libraries
+**Done as of fd6c0630799d360cef83871cc6b3af05e4dc3a0d**
 
 * Download Manager
     * Bible browser
@@ -40,6 +42,9 @@ These are the tasks that will need to be accomplished before the 1.0 major relea
         * Research how to accomplish infinite scroll
         * Implement infinite scroll
     * Red letter enabled
+    
+* Cleanup
+	* Include only necessary libraries for jSword, rather than all dependencies. APK ~20MB is way too big.
 
 **Release v.1 to Play store**
 
