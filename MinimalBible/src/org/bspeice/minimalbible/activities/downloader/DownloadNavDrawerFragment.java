@@ -37,7 +37,7 @@ public class DownloadNavDrawerFragment extends BaseNavigationDrawerFragment {
 		for (int i = 0; i < displayCategories.length; i++) {
 			sCategories[i] = displayCategories[i].toString();
 		}
-
+		
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar()
 				.getThemedContext(), android.R.layout.simple_list_item_1,
 				android.R.id.text1, sCategories));
