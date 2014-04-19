@@ -1,1 +1,7 @@
 /bin
+/build
+/distribution
+/ivy
+/libs
+/tools
+/ivy.xml
