@@ -6,7 +6,6 @@ import org.bspeice.minimalbible.MinimalBibleConstants;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseActivity;
 import org.bspeice.minimalbible.activities.BaseNavigationDrawerFragment;
-import org.bspeice.minimalbible.activities.downloader.DownloadManager.BookRefreshListener;
 import org.crosswire.jsword.book.Book;
 
 import android.app.Activity;
@@ -30,8 +29,6 @@ import android.widget.Toast;
 
 public class DownloadActivity extends BaseActivity implements
 		BaseNavigationDrawerFragment.NavigationDrawerCallbacks {
-
-	private ProgressDialog refreshDialog;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -186,8 +183,7 @@ public class DownloadActivity extends BaseActivity implements
 	}
 
 	private void refreshModules() {
-		// TODO: Discover if we need to refresh over Internet, or use a cached
-		// copy
+		// TODO: Discover if we need to refresh over Internet, or use a cached copy
 		// Fun fact - jSword handles the caching for us.
 		ProgressDialog refreshDialog = new ProgressDialog(this);
 		refreshDialog.setMessage("Refreshing available modules...");
@@ -225,8 +221,8 @@ public class DownloadActivity extends BaseActivity implements
 
 		}
 	}
-
-	private class DlBookRefreshListener implements BookRefreshListener {
+	
+	private class DlBookRefreshListener implements BookRefreshTask.BookRefreshListener {
 		// TODO: Figure out why I need to pass in the ProgressDialog, and can't cancel it from onRefreshComplete.
 		ProgressDialog dl;
 		public DlBookRefreshListener(ProgressDialog dl) {

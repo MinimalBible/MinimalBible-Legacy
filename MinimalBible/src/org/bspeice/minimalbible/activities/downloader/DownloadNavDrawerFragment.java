@@ -2,8 +2,6 @@ package org.bspeice.minimalbible.activities.downloader;
 
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseNavigationDrawerFragment;
-import org.crosswire.jsword.book.BookCategory;
-import org.crosswire.jsword.book.BookFilters;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,10 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class DownloadNavDrawerFragment extends BaseNavigationDrawerFragment {
-	
-	private final BookCategory[] displayCategories = {BookCategory.BIBLE, BookCategory.COMMENTARY,
-			BookCategory.DICTIONARY, BookCategory.IMAGES, BookCategory.MAPS
-	};
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,9 +27,9 @@ public class DownloadNavDrawerFragment extends BaseNavigationDrawerFragment {
 					}
 				});
 		
-		String[] sCategories = new String[displayCategories.length];
-		for (int i = 0; i < displayCategories.length; i++) {
-			sCategories[i] = displayCategories[i].toString();
+		String[] sCategories = new String[DownloadManager.VALID_CATEGORIES.length];
+		for (int i = 0; i < DownloadManager.VALID_CATEGORIES.length; i++) {
+			sCategories[i] = DownloadManager.VALID_CATEGORIES[i].toString();
 		}
 		
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar()
