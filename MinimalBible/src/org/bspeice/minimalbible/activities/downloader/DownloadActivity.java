@@ -1,31 +1,15 @@
 package org.bspeice.minimalbible.activities.downloader;
 
-import java.util.List;
-
-import org.bspeice.minimalbible.MinimalBibleConstants;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseActivity;
 import org.bspeice.minimalbible.activities.BaseNavigationDrawerFragment;
-import org.crosswire.jsword.book.Book;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class DownloadActivity extends BaseActivity implements
 		BaseNavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -54,10 +38,6 @@ public class DownloadActivity extends BaseActivity implements
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
-
-		// Refresh our modules - prompts user if they do actually want to
-		// connect to the internet
-		doRefreshModules();
 	}
 
 	@Override
@@ -67,21 +47,11 @@ public class DownloadActivity extends BaseActivity implements
 		fragmentManager
 				.beginTransaction()
 				.replace(R.id.container,
-						PlaceholderFragment.newInstance(position + 1)).commit();
+						BookListFragment.newInstance(DownloadManager.VALID_CATEGORIES[position])).commit();
 	}
 
-	public void onSectionAttached(int number) {
-		switch (number) {
-		case 1:
-			mTitle = getString(R.string.title_section1);
-			break;
-		case 2:
-			mTitle = getString(R.string.title_section2);
-			break;
-		case 3:
-			mTitle = getString(R.string.title_section3);
-			break;
-		}
+	public void onSectionAttached(String category) {
+		mTitle = category;
 	}
 
 	public void restoreActionBar() {
@@ -115,126 +85,4 @@ public class DownloadActivity extends BaseActivity implements
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
-		private static final String ARG_SECTION_NUMBER = "section_number";
-
-		/**
-		 * Returns a new instance of this fragment for the given section number.
-		 */
-		public static PlaceholderFragment newInstance(int sectionNumber) {
-			PlaceholderFragment fragment = new PlaceholderFragment();
-			Bundle args = new Bundle();
-			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-			fragment.setArguments(args);
-			return fragment;
-		}
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_download,
-					container, false);
-			TextView textView = (TextView) rootView
-					.findViewById(R.id.section_label);
-			textView.setText(Integer.toString(getArguments().getInt(
-					ARG_SECTION_NUMBER)));
-			return rootView;
-		}
-
-		@Override
-		public void onAttach(Activity activity) {
-			super.onAttach(activity);
-			((DownloadActivity) activity).onSectionAttached(getArguments()
-					.getInt(ARG_SECTION_NUMBER));
-		}
-	}
-
-	private void doRefreshModules() {
-		SharedPreferences prefs = getSharedPreferences(
-				MinimalBibleConstants.DOWNLOAD_PREFS_FILE, MODE_PRIVATE);
-
-		// If downloading has not been enabled, or user has permanently disabled
-		// downloading, WARN THEM!
-		if (!prefs
-				.getBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED, false)
-				|| prefs.getBoolean(
-						MinimalBibleConstants.KEY_PERM_DISABLE_DOWNLOAD, false)) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			DownloadDialogListener dialogListener = new DownloadDialogListener();
-			builder.setMessage(
-					"About to contact servers to download content. Continue?")
-					.setPositiveButton("Yes", dialogListener)
-					.setNegativeButton("No", dialogListener)
-					.setCancelable(false).show();
-		} else {
-			refreshModules();
-		}
-	}
-
-	private void refreshModules() {
-		// TODO: Discover if we need to refresh over Internet, or use a cached copy
-		// Fun fact - jSword handles the caching for us.
-		ProgressDialog refreshDialog = new ProgressDialog(this);
-		refreshDialog.setMessage("Refreshing available modules...");
-		refreshDialog.setCancelable(false);
-		refreshDialog.show();
-		DownloadManager dm = new DownloadManager();
-		dm.fetchAvailableBooks(true, new DlBookRefreshListener(refreshDialog));
-	}
-
-	private class DownloadDialogListener implements
-			DialogInterface.OnClickListener {
-		@Override
-		public void onClick(DialogInterface dialog, int which) {
-			switch (which) {
-			case DialogInterface.BUTTON_POSITIVE:
-				// Clicked ready to continue - allow downloading in the future
-				SharedPreferences prefs = getSharedPreferences(
-						MinimalBibleConstants.DOWNLOAD_PREFS_FILE, MODE_PRIVATE);
-				prefs.edit()
-						.putBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED,
-								true).commit();
-
-				// And warn them that it has been enabled in the future.
-				Toast.makeText(DownloadActivity.this,
-						"Downloading now enabled. Disable in settings.",
-						Toast.LENGTH_SHORT).show();
-				refreshModules();
-				break;
-
-			case DialogInterface.BUTTON_NEGATIVE:
-				// Not going to continue, still show what has
-				// already been downloaded.
-				break;
-			}
-
-		}
-	}
-	
-	private class DlBookRefreshListener implements BookRefreshTask.BookRefreshListener {
-		// TODO: Figure out why I need to pass in the ProgressDialog, and can't cancel it from onRefreshComplete.
-		ProgressDialog dl;
-		public DlBookRefreshListener(ProgressDialog dl) {
-			this.dl = dl;
-		}
-		@Override
-		public void onRefreshComplete(List<Book> results) {
-			dl.cancel();
-			for (Book b : results) {
-				Log.d("DlBookRefreshListener", b.getName());
-			}
-		}
-	}
-
 }

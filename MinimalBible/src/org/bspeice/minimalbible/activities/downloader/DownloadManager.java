@@ -3,10 +3,13 @@ package org.bspeice.minimalbible.activities.downloader;
 import java.util.Map;
 
 import org.bspeice.minimalbible.MinimalBible;
+import org.bspeice.minimalbible.MinimalBibleConstants;
 import org.crosswire.jsword.book.BookCategory;
 import org.crosswire.jsword.book.install.InstallManager;
 import org.crosswire.jsword.book.install.Installer;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 public class DownloadManager {
@@ -21,14 +24,31 @@ public class DownloadManager {
 		setDownloadDir();
 	}
 
-	public BookRefreshTask fetchAvailableBooks(boolean refresh,
+	public BookRefreshTask fetchAvailableBooks(
 			BookRefreshTask.BookRefreshListener bookRefreshListener) {
 
 		Map<String, Installer> installers = getInstallers();
 
-		return (BookRefreshTask) new BookRefreshTask(refresh,
+		return (BookRefreshTask) new BookRefreshTask(willRefresh(),
 				bookRefreshListener).execute(installers.values().toArray(
 				new Installer[installers.size()]));
+	}
+
+	public boolean willRefresh() {
+		// Method to determine if we need a refresh
+		// Public, so other modules can predict and take action accordingly.
+		// TODO: Discover if we need to refresh over Internet, or use a cached
+		// copy
+		// Fun fact - jSword handles the caching for us.
+
+		SharedPreferences prefs = MinimalBible.getAppContext()
+				.getSharedPreferences(
+						MinimalBibleConstants.DOWNLOAD_PREFS_FILE,
+						Context.MODE_PRIVATE);
+
+		return (!prefs.getBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED,
+				false) || prefs.getBoolean(
+				MinimalBibleConstants.KEY_PERM_DISABLE_DOWNLOAD, false));
 	}
 
 	public Map<String, Installer> getInstallers() {
