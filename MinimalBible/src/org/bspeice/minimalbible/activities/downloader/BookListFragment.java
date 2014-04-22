@@ -6,6 +6,8 @@ import org.bspeice.minimalbible.MinimalBibleConstants;
 import org.bspeice.minimalbible.R;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
+import org.crosswire.jsword.book.BookFilter;
+import org.crosswire.jsword.book.BookFilters;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,7 +17,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,8 @@ public class BookListFragment extends Fragment {
 	 * The fragment argument representing the section number for this fragment.
 	 */
 	private static final String ARG_BOOK_CATEGORY = "book_category";
+
+	protected TextView tv;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -50,9 +53,9 @@ public class BookListFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_download, container,
 				false);
-		TextView textView = (TextView) rootView
-				.findViewById(R.id.section_label);
-		textView.setText(getArguments().getString(ARG_BOOK_CATEGORY));
+		tv = (TextView) rootView.findViewById(R.id.section_label);
+		tv.setText(getArguments().getString(ARG_BOOK_CATEGORY));
+		displayModules();
 		return rootView;
 	}
 
@@ -64,9 +67,14 @@ public class BookListFragment extends Fragment {
 	}
 
 	public void displayModules() {
-		DownloadManager dm = new DownloadManager();
-
-		if (dm.willRefresh()) {
+		SharedPreferences prefs = getActivity()
+				.getSharedPreferences(
+						MinimalBibleConstants.DOWNLOAD_PREFS_FILE,
+						Context.MODE_PRIVATE);
+		boolean dialogDisplayed = prefs.getBoolean(
+				MinimalBibleConstants.KEY_SHOWED_DOWNLOAD_DIALOG, false);
+		
+		if (!dialogDisplayed) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			DownloadDialogListener dialogListener = new DownloadDialogListener();
 			builder.setMessage(
@@ -80,17 +88,50 @@ public class BookListFragment extends Fragment {
 	}
 
 	private void refreshModules() {
+		BookCategory bc = BookCategory.fromString(getArguments().getString(
+				ARG_BOOK_CATEGORY));
+		BookFilter f;
+		// We wouldn't need this switch if BookFilters.BookCategoryFilter were
+		// public...
+		switch (bc) {
+		case BIBLE:
+			f = BookFilters.getBibles();
+			break;
+		case COMMENTARY:
+			f = BookFilters.getCommentaries();
+			break;
+		case DAILY_DEVOTIONS:
+			f = BookFilters.getDailyDevotionals();
+			break;
+		case DICTIONARY:
+			f = BookFilters.getDictionaries();
+			break;
+		case GENERAL_BOOK:
+			f = BookFilters.getGeneralBooks();
+			break;
+		case GLOSSARY:
+			f = BookFilters.getGlossaries();
+			break;
+		case MAPS:
+			f = BookFilters.getMaps();
+			break;
+		default:
+			// DownloadManager takes care of accepting a null value
+			f = null;
+			break;
+		}
 		DownloadManager dm = new DownloadManager();
 
+		ProgressDialog refreshDialog = new ProgressDialog(getActivity());
 		if (dm.willRefresh()) {
-			ProgressDialog refreshDialog = new ProgressDialog(getActivity());
 			refreshDialog.setMessage("Refreshing available modules...");
-			refreshDialog.setCancelable(false);
-			refreshDialog.show();
-			dm.fetchAvailableBooks(new DlBookRefreshListener(refreshDialog));
 		} else {
-			dm.fetchAvailableBooks(new DlBookRefreshListener());
+			refreshDialog
+					.setMessage("Fetching available modules from cache...");
 		}
+		refreshDialog.setCancelable(false);
+		refreshDialog.show();
+		dm.fetchAvailableBooks(f, new DlBookRefreshListener(refreshDialog));
 	}
 
 	private class DlBookRefreshListener implements
@@ -102,19 +143,14 @@ public class BookListFragment extends Fragment {
 		public DlBookRefreshListener(ProgressDialog dl) {
 			this.dl = dl;
 		}
-		
-		public DlBookRefreshListener() {
-		}
 
 		@Override
 		public void onRefreshComplete(List<Book> results) {
 			if (dl != null) {
 				dl.cancel();
 			}
-			
-			for (Book b : results) {
-				Log.d("DlBookRefreshListener", b.getName());
-			}
+			tv.setText(results.get(0).getName());
+
 		}
 	}
 
@@ -122,11 +158,15 @@ public class BookListFragment extends Fragment {
 			DialogInterface.OnClickListener {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
+			SharedPreferences prefs = getActivity().getSharedPreferences(
+					MinimalBibleConstants.DOWNLOAD_PREFS_FILE,
+					Context.MODE_PRIVATE);
+			prefs.edit().putBoolean(MinimalBibleConstants.KEY_SHOWED_DOWNLOAD_DIALOG, true)
+				.commit();
+
 			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE:
 				// Clicked ready to continue - allow downloading in the future
-				SharedPreferences prefs = getActivity().getSharedPreferences(
-						MinimalBibleConstants.DOWNLOAD_PREFS_FILE, Context.MODE_PRIVATE);
 				prefs.edit()
 						.putBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED,
 								true).commit();
@@ -139,11 +179,16 @@ public class BookListFragment extends Fragment {
 				break;
 
 			case DialogInterface.BUTTON_NEGATIVE:
-				// Not going to continue, still show what has
-				// already been downloaded.
+				// Clicked to not download - Permanently disable downloading
+				prefs.edit()
+						.putBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED,
+								false).commit();
+				Toast.makeText(getActivity(),
+						"Disabling downloading. Re-enable it in settings.",
+						Toast.LENGTH_SHORT).show();
+				refreshModules();
 				break;
 			}
-
 		}
 	}
 
