@@ -1,29 +1,36 @@
 package org.bspeice.minimalbible.activities.downloader;
 
+import java.util.List;
 import java.util.Map;
 
 import org.bspeice.minimalbible.MinimalBible;
-import org.bspeice.minimalbible.MinimalBibleConstants;
+import org.bspeice.minimalbible.activities.downloader.BookRefreshTask.BookRefreshListener;
+import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
 import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.install.InstallManager;
 import org.crosswire.jsword.book.install.Installer;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 public class DownloadManager {
-	
-	// TODO: Probably should be a singleton.
 
 	private final String TAG = "DownloadManager";
+	private static DownloadManager instance;
+	private List<Book> books;
 
 	public static final BookCategory[] VALID_CATEGORIES = { BookCategory.BIBLE,
 			BookCategory.COMMENTARY, BookCategory.DICTIONARY,
 			BookCategory.IMAGES, BookCategory.MAPS };
 
-	public DownloadManager() {
+	public static DownloadManager getInstance() {
+		if (instance == null) {
+			instance = new DownloadManager();
+		}
+		return instance;
+	}
+
+	private DownloadManager() {
 		setDownloadDir();
 	}
 
@@ -31,7 +38,7 @@ public class DownloadManager {
 			BookRefreshTask.BookRefreshListener bookRefreshListener) {
 		return _fetchAvailableBooks(null, bookRefreshListener);
 	}
-	
+
 	public BookRefreshTask fetchAvailableBooks(BookFilter f,
 			BookRefreshTask.BookRefreshListener bookRefreshListener) {
 		return _fetchAvailableBooks(f, bookRefreshListener);
@@ -39,31 +46,29 @@ public class DownloadManager {
 
 	private BookRefreshTask _fetchAvailableBooks(BookFilter f,
 			BookRefreshTask.BookRefreshListener bookRefreshListener) {
-		
-		Map<String, Installer> installers = getInstallers();
 
-		return (BookRefreshTask) new BookRefreshTask(willRefresh(),
-				bookRefreshListener).execute(installers.values().toArray(
-				new Installer[installers.size()]));
+		if (!isLoaded()) {
+			return (BookRefreshTask) new BookRefreshTask(
+					new DmBookRefreshListener(bookRefreshListener))
+					.execute(getInstallersArray());
+		} else {
+			return (BookRefreshTask) new NoopBookRefreshTask(books,
+					bookRefreshListener).execute(getInstallersArray());
+		}
 	}
 
-	public boolean willRefresh() {
-		// Method to determine if we need a refresh
-		// Public, so other modules can predict and take action accordingly.
-		// TODO: Discover if we need to refresh over Internet, or use a cached
-		// copy - likely something time-based, also check network state.
-		// Fun fact - jSword handles the caching for us.
-
-		SharedPreferences prefs = MinimalBible.getAppContext()
-				.getSharedPreferences(
-						MinimalBibleConstants.DOWNLOAD_PREFS_FILE,
-						Context.MODE_PRIVATE);
-
-		return (prefs.getBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED, false));
+	public boolean isLoaded() {
+		// Let methods know if we're going to take a while to reload everything
+		return (books != null);
 	}
 
 	public Map<String, Installer> getInstallers() {
 		return new InstallManager().getInstallers();
+	}
+	
+	public Installer[] getInstallersArray() {
+		Map<String, Installer> installers = getInstallers();
+		return installers.values().toArray(new Installer[installers.size()]);
 	}
 
 	private void setDownloadDir() {
@@ -72,6 +77,21 @@ public class DownloadManager {
 		String home = MinimalBible.getAppContext().getFilesDir().toString();
 		Log.d(TAG, "Setting jsword.home to: " + home);
 		System.setProperty("jsword.home", home);
+	}
+
+	// Create our own refresh listener to save a reference to the books
+	private class DmBookRefreshListener implements BookRefreshListener {
+		private BookRefreshListener listener;
+
+		public DmBookRefreshListener(BookRefreshListener listener) {
+			this.listener = listener;
+		}
+
+		@Override
+		public void onRefreshComplete(List<Book> results) {
+			books = results;
+			listener.onRefreshComplete(results);
+		}
 	}
 
 }

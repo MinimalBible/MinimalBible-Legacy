@@ -120,18 +120,17 @@ public class BookListFragment extends Fragment {
 			f = null;
 			break;
 		}
-		DownloadManager dm = new DownloadManager();
-
-		ProgressDialog refreshDialog = new ProgressDialog(getActivity());
-		if (dm.willRefresh()) {
+		DownloadManager dm = DownloadManager.getInstance();
+		
+		if (!dm.isLoaded()) {
+			ProgressDialog refreshDialog = new ProgressDialog(getActivity());	
 			refreshDialog.setMessage("Refreshing available modules...");
+			refreshDialog.setCancelable(false);
+			refreshDialog.show();
+			dm.fetchAvailableBooks(f, new DlBookRefreshListener(refreshDialog));
 		} else {
-			refreshDialog
-					.setMessage("Fetching available modules from cache...");
+			dm.fetchAvailableBooks(f, new DlBookRefreshListener(null));
 		}
-		refreshDialog.setCancelable(false);
-		refreshDialog.show();
-		dm.fetchAvailableBooks(f, new DlBookRefreshListener(refreshDialog));
 	}
 
 	private class DlBookRefreshListener implements

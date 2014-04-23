@@ -3,29 +3,31 @@ package org.bspeice.minimalbible.activities.downloader;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.bspeice.minimalbible.MinimalBible;
+import org.bspeice.minimalbible.MinimalBibleConstants;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.install.InstallException;
 import org.crosswire.jsword.book.install.Installer;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
 public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
-	
+
 	private static final String TAG = "BookRefreshTask";
-	
+
 	private BookRefreshListener listener;
-	private boolean refresh;
 	private BookFilter filter;
-	
-	public BookRefreshTask(boolean refresh, BookRefreshListener listener) {
-		this.refresh = refresh;
+
+	public BookRefreshTask(BookRefreshListener listener) {
 		this.listener = listener;
 	}
-	
-	public BookRefreshTask(boolean refresh, BookFilter f, BookRefreshListener listener) {
-		this.refresh = refresh;
+
+	public BookRefreshTask(BookFilter f,
+			BookRefreshListener listener) {
 		this.filter = f;
 		this.listener = listener;
 	}
@@ -33,35 +35,50 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 	@Override
 	protected List<Book> doInBackground(Installer... params) {
 		List<Book> books = new LinkedList<Book>();
-		
-		for (Installer i: params) {
-			if (refresh) {
+
+		for (Installer i : params) {
+			if (doRefresh()) {
 				try {
 					i.reloadBookList();
 				} catch (InstallException e) {
-					Log.e(TAG, "Error downloading books from installer: " + i.toString(), e);
+					Log.e(TAG,
+							"Error downloading books from installer: "
+									+ i.toString(), e);
 				}
 			}
-			
+
 			if (filter != null) {
 				books.addAll(i.getBooks(filter));
 			} else {
 				books.addAll(i.getBooks());
 			}
 		}
-		
+
 		return books;
 	}
-	
+
+	private boolean doRefresh() {
+		// Check if we should refresh over the internet, or use the local copy
+		// TODO: Discover if we need to refresh over Internet, or use a cached
+		// copy - likely something time-based, also check network state.
+		// Fun fact - jSword handles the caching for us.
+
+		SharedPreferences prefs = MinimalBible.getAppContext()
+				.getSharedPreferences(
+						MinimalBibleConstants.DOWNLOAD_PREFS_FILE,
+						Context.MODE_PRIVATE);
+
+		// Refresh if download enabled
+		return prefs.getBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED, false);
+	}
+
 	@Override
 	protected void onPostExecute(List<Book> result) {
 		super.onPostExecute(result);
 		listener.onRefreshComplete(result);
 	}
-	
+
 	public interface BookRefreshListener {
 		public void onRefreshComplete(List<Book> results);
 	}
 }
-
-
