@@ -1,3 +1,6 @@
 [submodule "jsword"]
 	path = jsword
 	url = https://github.com/crosswire/jsword.git
+[submodule "jsword-minimalbible"]
+	path = jsword-minimalbible
+	url = https://github.com/MinimalBible/jsword-minimalbible.git
