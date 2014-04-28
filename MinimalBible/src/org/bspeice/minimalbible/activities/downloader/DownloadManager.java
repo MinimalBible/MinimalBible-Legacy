@@ -11,6 +11,8 @@ import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.install.InstallManager;
 import org.crosswire.jsword.book.install.Installer;
 
+import de.greenrobot.event.EventBus;
+
 import android.util.Log;
 
 public class DownloadManager {
@@ -18,6 +20,7 @@ public class DownloadManager {
 	private final String TAG = "DownloadManager";
 	private static DownloadManager instance;
 	private List<Book> books;
+	private EventBus downloadBus;
 
 	public static final BookCategory[] VALID_CATEGORIES = { BookCategory.BIBLE,
 			BookCategory.COMMENTARY, BookCategory.DICTIONARY,
@@ -32,6 +35,7 @@ public class DownloadManager {
 
 	private DownloadManager() {
 		setDownloadDir();
+		downloadBus = new EventBus();
 	}
 
 	public BookRefreshTask fetchAvailableBooks(
@@ -93,5 +97,12 @@ public class DownloadManager {
 			listener.onRefreshComplete(results);
 		}
 	}
-
+	
+	private void downloadEvents() {
+		new EventBookRefreshTask(downloadBus).execute(getInstallersArray());
+	}
+	
+	public EventBus getDownloadBus() {
+		return this.downloadBus;
+	}
 }

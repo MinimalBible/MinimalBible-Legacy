@@ -9,6 +9,8 @@ import org.crosswire.jsword.book.BookCategory;
 import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.BookFilters;
 
+import de.greenrobot.event.EventBus;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -33,6 +35,7 @@ public class BookListFragment extends Fragment {
 	private static final String ARG_BOOK_CATEGORY = "book_category";
 
 	protected TextView tv;
+	private ProgressDialog refreshDialog;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -121,16 +124,20 @@ public class BookListFragment extends Fragment {
 			break;
 		}
 		DownloadManager dm = DownloadManager.getInstance();
+		EventBus downloadBus = dm.getDownloadBus();
+		downloadBus.registerSticky(this);
 		
-		if (!dm.isLoaded()) {
-			ProgressDialog refreshDialog = new ProgressDialog(getActivity());	
-			refreshDialog.setMessage("Refreshing available modules...");
-			refreshDialog.setCancelable(false);
-			refreshDialog.show();
-			dm.fetchAvailableBooks(f, new DlBookRefreshListener(refreshDialog));
-		} else {
-			dm.fetchAvailableBooks(f, new DlBookRefreshListener(null));
+		refreshDialog = new ProgressDialog(getActivity());	
+		refreshDialog.setMessage("Refreshing available modules...");
+		refreshDialog.setCancelable(false);
+		refreshDialog.show();
+	}
+	
+	public void onEventMainThread(EventBookList event) {
+		if (refreshDialog != null) {
+			refreshDialog.cancel();
 		}
+		tv.setText(event.getBookList().get(0).getName());
 	}
 
 	private class DlBookRefreshListener implements
