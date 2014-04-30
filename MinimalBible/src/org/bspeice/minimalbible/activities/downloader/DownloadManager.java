@@ -29,6 +29,7 @@ public class DownloadManager {
 	public static DownloadManager getInstance() {
 		if (instance == null) {
 			instance = new DownloadManager();
+			instance.downloadEvents();
 		}
 		return instance;
 	}
