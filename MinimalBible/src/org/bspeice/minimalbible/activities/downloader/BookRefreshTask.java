@@ -10,32 +10,33 @@ import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.install.InstallException;
 import org.crosswire.jsword.book.install.Installer;
 
+import de.greenrobot.event.EventBus;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
 public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
+	private static final String TAG = "EventBookRefreshTask";
 
-	private static final String TAG = "BookRefreshTask";
-
-	private BookRefreshListener listener;
+	private EventBus downloadBus;
 	private BookFilter filter;
 
-	public BookRefreshTask(BookRefreshListener listener) {
-		this.listener = listener;
+	public BookRefreshTask(EventBus downloadBus) {
+		this.downloadBus = downloadBus;
 	}
 
-	public BookRefreshTask(BookFilter f,
-			BookRefreshListener listener) {
+	public BookRefreshTask(EventBus downloadBus, BookFilter f) {
+		this.downloadBus = downloadBus;
 		this.filter = f;
-		this.listener = listener;
 	}
 
 	@Override
 	protected List<Book> doInBackground(Installer... params) {
 		List<Book> books = new LinkedList<Book>();
 
+		int index = 0;
 		for (Installer i : params) {
 			if (doRefresh()) {
 				try {
@@ -52,8 +53,10 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 			} else {
 				books.addAll(i.getBooks());
 			}
+			publishProgress(++index, params.length);
 		}
 
+		downloadBus.postSticky(new EventBookList(books));
 		return books;
 	}
 
@@ -70,15 +73,5 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 
 		// Refresh if download enabled
 		return prefs.getBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED, false);
-	}
-
-	@Override
-	protected void onPostExecute(List<Book> result) {
-		super.onPostExecute(result);
-		listener.onRefreshComplete(result);
-	}
-
-	public interface BookRefreshListener {
-		public void onRefreshComplete(List<Book> results);
 	}
 }

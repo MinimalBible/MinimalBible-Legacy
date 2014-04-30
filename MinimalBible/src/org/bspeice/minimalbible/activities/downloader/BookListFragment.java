@@ -140,26 +140,6 @@ public class BookListFragment extends Fragment {
 		tv.setText(event.getBookList().get(0).getName());
 	}
 
-	private class DlBookRefreshListener implements
-			BookRefreshTask.BookRefreshListener {
-		// TODO: Figure out why I need to pass in the ProgressDialog, and can't
-		// cancel it from onRefreshComplete.
-		ProgressDialog dl;
-
-		public DlBookRefreshListener(ProgressDialog dl) {
-			this.dl = dl;
-		}
-
-		@Override
-		public void onRefreshComplete(List<Book> results) {
-			if (dl != null) {
-				dl.cancel();
-			}
-			tv.setText(results.get(0).getName());
-
-		}
-	}
-
 	private class DownloadDialogListener implements
 			DialogInterface.OnClickListener {
 		@Override

@@ -1,25 +1,19 @@
 package org.bspeice.minimalbible.activities.downloader;
 
-import java.util.List;
 import java.util.Map;
 
 import org.bspeice.minimalbible.MinimalBible;
-import org.bspeice.minimalbible.activities.downloader.BookRefreshTask.BookRefreshListener;
-import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
-import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.install.InstallManager;
 import org.crosswire.jsword.book.install.Installer;
 
-import de.greenrobot.event.EventBus;
-
 import android.util.Log;
+import de.greenrobot.event.EventBus;
 
 public class DownloadManager {
 
 	private final String TAG = "DownloadManager";
 	private static DownloadManager instance;
-	private List<Book> books;
 	private EventBus downloadBus;
 
 	public static final BookCategory[] VALID_CATEGORIES = { BookCategory.BIBLE,
@@ -39,34 +33,6 @@ public class DownloadManager {
 		downloadBus = new EventBus();
 	}
 
-	public BookRefreshTask fetchAvailableBooks(
-			BookRefreshTask.BookRefreshListener bookRefreshListener) {
-		return _fetchAvailableBooks(null, bookRefreshListener);
-	}
-
-	public BookRefreshTask fetchAvailableBooks(BookFilter f,
-			BookRefreshTask.BookRefreshListener bookRefreshListener) {
-		return _fetchAvailableBooks(f, bookRefreshListener);
-	}
-
-	private BookRefreshTask _fetchAvailableBooks(BookFilter f,
-			BookRefreshTask.BookRefreshListener bookRefreshListener) {
-
-		if (!isLoaded()) {
-			return (BookRefreshTask) new BookRefreshTask(
-					new DmBookRefreshListener(bookRefreshListener))
-					.execute(getInstallersArray());
-		} else {
-			return (BookRefreshTask) new NoopBookRefreshTask(books,
-					bookRefreshListener).execute(getInstallersArray());
-		}
-	}
-
-	public boolean isLoaded() {
-		// Let methods know if we're going to take a while to reload everything
-		return (books != null);
-	}
-
 	public Map<String, Installer> getInstallers() {
 		return new InstallManager().getInstallers();
 	}
@@ -84,23 +50,8 @@ public class DownloadManager {
 		System.setProperty("jsword.home", home);
 	}
 
-	// Create our own refresh listener to save a reference to the books
-	private class DmBookRefreshListener implements BookRefreshListener {
-		private BookRefreshListener listener;
-
-		public DmBookRefreshListener(BookRefreshListener listener) {
-			this.listener = listener;
-		}
-
-		@Override
-		public void onRefreshComplete(List<Book> results) {
-			books = results;
-			listener.onRefreshComplete(results);
-		}
-	}
-	
 	private void downloadEvents() {
-		new EventBookRefreshTask(downloadBus).execute(getInstallersArray());
+		new BookRefreshTask(downloadBus).execute(getInstallersArray());
 	}
 	
 	public EventBus getDownloadBus() {
