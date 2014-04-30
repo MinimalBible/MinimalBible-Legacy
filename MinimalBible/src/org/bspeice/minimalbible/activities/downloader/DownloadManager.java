@@ -23,7 +23,6 @@ public class DownloadManager {
 	public static DownloadManager getInstance() {
 		if (instance == null) {
 			instance = new DownloadManager();
-			instance.downloadEvents();
 		}
 		return instance;
 	}
@@ -31,6 +30,7 @@ public class DownloadManager {
 	private DownloadManager() {
 		setDownloadDir();
 		downloadBus = new EventBus();
+		downloadEvents();
 	}
 
 	public Map<String, Installer> getInstallers() {
