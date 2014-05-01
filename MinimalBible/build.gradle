@@ -1,11 +1,10 @@
 apply plugin: 'android'
 
-
 dependencies {
     compile fileTree('libs') {
         include '*.jar'
-        builtBy 'minimalBibleJSword'
     }
+	compile project(path: ':jsword-minimalbible', configuration: 'buildJSword')
     compile project(':appcompat_v7')
 }
 
@@ -46,8 +45,4 @@ android {
     }
 }
 
-task minimalBibleJSword (type: GradleBuild) { GradleBuild antBuild ->
-    antBuild.buildFile('jsword-stub.gradle')
-    antBuild.tasks = ['clean', 'ivy.check', 'ivy.download', 'ivy.task', 'ivy',
-            'init', 'mergeCode', 'compile', 'jar', 'copyJarsToMinimalBible']
-}
+
