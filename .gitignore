@@ -4,3 +4,4 @@ local.properties
 /MinimalBible/.gradle
 /appcompat_v7/build
 /.idea
+*.iml
