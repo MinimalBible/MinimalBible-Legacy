@@ -47,7 +47,7 @@ public class DownloadActivity extends BaseActivity implements
 		fragmentManager
 				.beginTransaction()
 				.replace(R.id.container,
-						BookListFragment.newInstance(DownloadManager.VALID_CATEGORIES[position])).commit();
+						BookListFragment_.builder().bookCategory(DownloadManager.VALID_CATEGORIES[position]).build()).commit();
 	}
 
 	public void onSectionAttached(String category) {

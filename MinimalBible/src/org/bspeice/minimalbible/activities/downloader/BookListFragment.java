@@ -1,73 +1,55 @@
 package org.bspeice.minimalbible.activities.downloader;
 
-import java.util.List;
-
-import org.bspeice.minimalbible.MinimalBibleConstants;
-import org.bspeice.minimalbible.R;
-import org.crosswire.jsword.book.Book;
-import org.crosswire.jsword.book.BookCategory;
-import org.crosswire.jsword.book.BookFilter;
-import org.crosswire.jsword.book.BookFilters;
-
-import de.greenrobot.event.EventBus;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.Trace;
+import org.androidannotations.annotations.ViewById;
+import org.bspeice.minimalbible.MinimalBibleConstants;
+import org.bspeice.minimalbible.R;
+import org.crosswire.jsword.book.Book;
+import org.crosswire.jsword.book.BookCategory;
+import org.crosswire.jsword.book.BookFilter;
+import org.crosswire.jsword.book.FilterUtil;
+
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
+@EFragment(R.layout.fragment_download)
 public class BookListFragment extends Fragment {
 	/**
 	 * The fragment argument representing the section number for this fragment.
 	 */
-	private static final String ARG_BOOK_CATEGORY = "book_category";
 
+    private final String TAG = "BookListFragment";
+
+    @FragmentArg
+	BookCategory bookCategory;
+
+    @ViewById(R.id.section_label)
 	protected TextView tv;
+
 	private ProgressDialog refreshDialog;
 
-	/**
-	 * Returns a new instance of this fragment for the given section number.
-	 */
-	public static BookListFragment newInstance(BookCategory c) {
-		BookListFragment fragment = new BookListFragment();
-		Bundle args = new Bundle();
-		args.putString(ARG_BOOK_CATEGORY, c.toString());
-		fragment.setArguments(args);
-		return fragment;
-	}
-
-	public BookListFragment() {
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_download, container,
-				false);
-		tv = (TextView) rootView.findViewById(R.id.section_label);
-		tv.setText(getArguments().getString(ARG_BOOK_CATEGORY));
-		displayModules();
-		return rootView;
-	}
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		((DownloadActivity) activity).onSectionAttached(getArguments()
-				.getString(ARG_BOOK_CATEGORY));
-	}
+    @Trace
+    @AfterViews
+    public void updateName() {
+        ((DownloadActivity) getActivity()).onSectionAttached(bookCategory.toString());
+        tv.setText(bookCategory.toString());
+        displayModules();
+    }
 
 	public void displayModules() {
 		SharedPreferences prefs = getActivity()
@@ -91,54 +73,41 @@ public class BookListFragment extends Fragment {
 	}
 
 	private void refreshModules() {
-		BookCategory bc = BookCategory.fromString(getArguments().getString(
-				ARG_BOOK_CATEGORY));
-		BookFilter f;
-		// We wouldn't need this switch if BookFilters.BookCategoryFilter were
-		// public...
-		switch (bc) {
-		case BIBLE:
-			f = BookFilters.getBibles();
-			break;
-		case COMMENTARY:
-			f = BookFilters.getCommentaries();
-			break;
-		case DAILY_DEVOTIONS:
-			f = BookFilters.getDailyDevotionals();
-			break;
-		case DICTIONARY:
-			f = BookFilters.getDictionaries();
-			break;
-		case GENERAL_BOOK:
-			f = BookFilters.getGeneralBooks();
-			break;
-		case GLOSSARY:
-			f = BookFilters.getGlossaries();
-			break;
-		case MAPS:
-			f = BookFilters.getMaps();
-			break;
-		default:
-			// DownloadManager takes care of accepting a null value
-			f = null;
-			break;
-		}
 		DownloadManager dm = DownloadManager.getInstance();
-		EventBus downloadBus = dm.getDownloadBus();
-		downloadBus.registerSticky(this);
-		
-		refreshDialog = new ProgressDialog(getActivity());	
-		refreshDialog.setMessage("Refreshing available modules...");
-		refreshDialog.setCancelable(false);
-		refreshDialog.show();
+		EventBookList bookList = dm.getDownloadBus().getStickyEvent(EventBookList.class);
+		if (bookList == null) {
+            dm.getDownloadBus().registerSticky(this);
+            refreshDialog = new ProgressDialog(getActivity());
+            refreshDialog.setMessage("Refreshing available modules...");
+            refreshDialog.setCancelable(false);
+            refreshDialog.show();
+        } else {
+            displayBooks(bookList.getBookList());
+        }
 	}
-	
+
+    /*
+    Used by GreenRobot for notifying us that the book refresh is complete
+     */
+    @SuppressWarnings("unused")
 	public void onEventMainThread(EventBookList event) {
 		if (refreshDialog != null) {
 			refreshDialog.cancel();
 		}
-		tv.setText(event.getBookList().get(0).getName());
+		displayBooks(event.getBookList());
 	}
+
+    public void displayBooks(List<Book> bookList) {
+        try {
+            BookFilter f = FilterUtil.filterFromCategory(bookCategory);
+            List<Book> filteredBooks = FilterUtil.applyFilter(bookList, f);
+            tv.setText(filteredBooks.get(0).getName());
+        } catch (FilterUtil.InvalidFilterCategoryMappingException e) {
+            // To be honest, there should be no reason you end up here.
+            Log.e(TAG, e.getMessage());
+        }
+
+    }
 
 	private class DownloadDialogListener implements
 			DialogInterface.OnClickListener {

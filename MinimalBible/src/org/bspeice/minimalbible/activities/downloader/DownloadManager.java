@@ -1,13 +1,16 @@
 package org.bspeice.minimalbible.activities.downloader;
 
-import java.util.Map;
+import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
 import org.crosswire.jsword.book.BookCategory;
+import org.crosswire.jsword.book.BookFilter;
+import org.crosswire.jsword.book.BookFilters;
 import org.crosswire.jsword.book.install.InstallManager;
 import org.crosswire.jsword.book.install.Installer;
 
-import android.util.Log;
+import java.util.Map;
+
 import de.greenrobot.event.EventBus;
 
 public class DownloadManager {
@@ -18,7 +21,7 @@ public class DownloadManager {
 
 	public static final BookCategory[] VALID_CATEGORIES = { BookCategory.BIBLE,
 			BookCategory.COMMENTARY, BookCategory.DICTIONARY,
-			BookCategory.IMAGES, BookCategory.MAPS };
+			BookCategory.MAPS };
 
 	public static DownloadManager getInstance() {
 		if (instance == null) {
