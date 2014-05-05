@@ -26,7 +26,9 @@ dependencies {
 
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile 'de.greenrobot:eventbus:2.2.0'
-    compile 'com.google.android:support-v4:r7'
+
+    // Handled by appcompat
+    // compile 'com.google.android:support-v4:r7'
 }
 
 apt {
