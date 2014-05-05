@@ -1,14 +1,19 @@
 package org.bspeice.minimalbible.activities.downloader;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -38,8 +43,8 @@ public class BookListFragment extends Fragment {
     @FragmentArg
 	BookCategory bookCategory;
 
-    @ViewById(R.id.section_label)
-	protected TextView tv;
+    @ViewById(R.id.lst_download_available)
+	protected ListView downloadsAvailable;
 
 	private ProgressDialog refreshDialog;
 
@@ -47,7 +52,6 @@ public class BookListFragment extends Fragment {
     @AfterViews
     public void updateName() {
         ((DownloadActivity) getActivity()).onSectionAttached(bookCategory.toString());
-        tv.setText(bookCategory.toString());
         displayModules();
     }
 
@@ -97,11 +101,19 @@ public class BookListFragment extends Fragment {
 		displayBooks(event.getBookList());
 	}
 
+    public static void setInsets(Activity context, View view) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return;
+        SystemBarTintManager tintManager = new SystemBarTintManager(context);
+        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), config.getPixelInsetBottom());
+    }
+
     public void displayBooks(List<Book> bookList) {
         try {
             BookFilter f = FilterUtil.filterFromCategory(bookCategory);
             List<Book> filteredBooks = FilterUtil.applyFilter(bookList, f);
-            tv.setText(filteredBooks.get(0).getName());
+            downloadsAvailable.setAdapter(new BookListAdapter(this.getActivity(), filteredBooks));
+            setInsets(getActivity(), downloadsAvailable);
         } catch (FilterUtil.InvalidFilterCategoryMappingException e) {
             // To be honest, there should be no reason you end up here.
             Log.e(TAG, e.getMessage());
