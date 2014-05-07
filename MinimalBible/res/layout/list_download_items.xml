@@ -9,7 +9,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/img_download_icon"
-        android:layout_weight="1"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="0dp"
         android:layout_alignParentTop="true"
@@ -19,7 +18,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/txt_download_item_name"
-        android:layout_weight="1"
         android:layout_toRightOf="@+id/img_download_icon"
         android:layout_toLeftOf="@+id/img_download_index_downloaded" />
 
@@ -29,7 +27,6 @@
         android:id="@+id/img_download_index_downloaded"
         android:src="@drawable/ic_action_search"
         style="@style/AppBaseTheme.Borderless"
-        android:layout_weight="1"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/img_download_item_downloaded" />
 
@@ -37,7 +34,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/img_download_item_downloaded"
-        android:layout_weight="1"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         style="@style/AppBaseTheme.Borderless" />

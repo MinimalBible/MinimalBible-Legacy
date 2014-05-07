@@ -7,19 +7,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.Trace;
-import org.androidannotations.annotations.ViewById;
 import org.bspeice.minimalbible.MinimalBibleConstants;
 import org.bspeice.minimalbible.R;
 import org.crosswire.jsword.book.Book;
@@ -29,33 +27,58 @@ import org.crosswire.jsword.book.FilterUtil;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-@EFragment(R.layout.fragment_download)
 public class BookListFragment extends Fragment {
-	/**
-	 * The fragment argument representing the section number for this fragment.
-	 */
+    /**
+     * The fragment argument representing the section number for this fragment.
+     */
+    private static final String ARG_BOOK_CATEGORY = "book_category";
 
     private final String TAG = "BookListFragment";
 
-    @FragmentArg
-	BookCategory bookCategory;
-
-    @ViewById(R.id.lst_download_available)
-	protected ListView downloadsAvailable;
+    @InjectView(R.id.lst_download_available)
+    ListView downloadsAvailable;
 
 	private ProgressDialog refreshDialog;
 
-    @Trace
-    @AfterViews
-    public void updateName() {
-        ((DownloadActivity) getActivity()).onSectionAttached(bookCategory.toString());
-        displayModules();
+    /**
+     * Returns a new instance of this fragment for the given section number.
+     * TODO: This will need to be switched to an @Provides class
+     */
+    public static BookListFragment newInstance(BookCategory c) {
+        BookListFragment fragment = new BookListFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_BOOK_CATEGORY, c.toString());
+        fragment.setArguments(args);
+        return fragment;
     }
 
-	public void displayModules() {
+    public BookListFragment() {
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_download, container,
+                false);
+        ButterKnife.inject(this, rootView);
+        displayModules();
+        return rootView;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((DownloadActivity) activity).onSectionAttached(getArguments()
+                .getString(ARG_BOOK_CATEGORY));
+    }
+
+ 	public void displayModules() {
 		SharedPreferences prefs = getActivity()
 				.getSharedPreferences(
 						MinimalBibleConstants.DOWNLOAD_PREFS_FILE,
@@ -110,7 +133,9 @@ public class BookListFragment extends Fragment {
 
     public void displayBooks(List<Book> bookList) {
         try {
-            BookFilter f = FilterUtil.filterFromCategory(bookCategory);
+            // TODO: Should the filter be applied earlier in the process?
+            BookCategory c = BookCategory.fromString(getArguments().getString(ARG_BOOK_CATEGORY));
+            BookFilter f = FilterUtil.filterFromCategory(c);
             List<Book> filteredBooks = FilterUtil.applyFilter(bookList, f);
             downloadsAvailable.setAdapter(new BookListAdapter(this.getActivity(), filteredBooks));
             setInsets(getActivity(), downloadsAvailable);
