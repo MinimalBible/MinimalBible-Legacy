@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
+import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.MinimalBibleConstants;
 import org.bspeice.minimalbible.R;
 import org.crosswire.jsword.book.Book;
@@ -27,12 +28,15 @@ import org.crosswire.jsword.book.FilterUtil;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
  * A placeholder fragment containing a simple view.
  */
+
 public class BookListFragment extends Fragment {
     /**
      * The fragment argument representing the section number for this fragment.
@@ -43,6 +47,9 @@ public class BookListFragment extends Fragment {
 
     @InjectView(R.id.lst_download_available)
     ListView downloadsAvailable;
+
+    @Inject
+    DownloadManager downloadManager;
 
 	private ProgressDialog refreshDialog;
 
@@ -58,7 +65,11 @@ public class BookListFragment extends Fragment {
         return fragment;
     }
 
-    public BookListFragment() {
+    @Override
+    public void onCreate(Bundle state) {
+        super.onCreate(state);
+        MinimalBible app = MinimalBible.getApplication(getActivity());
+        app.inject(this);
     }
 
     @Override
@@ -100,10 +111,9 @@ public class BookListFragment extends Fragment {
 	}
 
 	private void refreshModules() {
-		DownloadManager dm = DownloadManager.getInstance();
-		EventBookList bookList = dm.getDownloadBus().getStickyEvent(EventBookList.class);
+		EventBookList bookList = downloadManager.getDownloadBus().getStickyEvent(EventBookList.class);
 		if (bookList == null) {
-            dm.getDownloadBus().registerSticky(this);
+            downloadManager.getDownloadBus().registerSticky(this);
             refreshDialog = new ProgressDialog(getActivity());
             refreshDialog.setMessage("Refreshing available modules...");
             refreshDialog.setCancelable(false);

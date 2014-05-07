@@ -3,7 +3,11 @@ package org.bspeice.minimalbible;
 import android.app.Application;
 import android.content.Context;
 
+import dagger.ObjectGraph;
+
 public class MinimalBible extends Application {
+
+    private ObjectGraph graph;
 	
 	private static MinimalBible instance;
 	
@@ -15,4 +19,21 @@ public class MinimalBible extends Application {
 		return instance;
 	}
 
+    @Override
+    public void onCreate() {
+        graph = ObjectGraph.create(new MinimalBibleModules());
+        graph.inject(this);
+    }
+
+    public void inject(Object o) {
+        graph.inject(o);
+    }
+
+    public static MinimalBible getApplication(Context ctx) {
+        return (MinimalBible)ctx.getApplicationContext();
+    }
+
+    public static MinimalBible getApplication() {
+        return (MinimalBible)getAppContext();
+    }
 }
