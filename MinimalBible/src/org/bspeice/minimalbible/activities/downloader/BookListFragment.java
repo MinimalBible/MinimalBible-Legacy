@@ -21,6 +21,8 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.MinimalBibleConstants;
 import org.bspeice.minimalbible.R;
+import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
+import org.bspeice.minimalbible.activities.downloader.manager.EventBookList;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
 import org.crosswire.jsword.book.BookFilter;

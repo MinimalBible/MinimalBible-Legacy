@@ -1,4 +1,6 @@
-package org.bspeice.minimalbible.activities.downloader;
+package org.bspeice.minimalbible.activities.downloader.manager;
+
+import org.bspeice.minimalbible.activities.downloader.BookListFragment;
 
 import javax.inject.Singleton;
 
@@ -17,6 +19,12 @@ import de.greenrobot.event.EventBus;
 )
 public class ActivityDownloaderModule {
 
+    /**
+     * Provide a Singleton DownloadManager for injection
+     * Note that we need to annotate Singleton here, only annotating on the
+     * DownloadManager itself is not enough.
+     * @return global DownloadManager instance
+     */
     @Provides @Singleton
     DownloadManager provideDownloadManager() {
         return new DownloadManager();

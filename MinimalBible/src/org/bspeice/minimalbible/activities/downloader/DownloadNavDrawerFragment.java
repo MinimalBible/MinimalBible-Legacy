@@ -2,6 +2,7 @@ package org.bspeice.minimalbible.activities.downloader;
 
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseNavigationDrawerFragment;
+import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

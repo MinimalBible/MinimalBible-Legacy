@@ -61,6 +61,7 @@ public class BookListAdapter extends BaseAdapter {
     public class BookItemView extends RelativeLayout {
 
         @InjectView(R.id.img_download_icon) ImageView downloadIcon;
+        @InjectView(R.id.download_txt_item_acronym) TextView acronym;
         @InjectView(R.id.txt_download_item_name) TextView itemName;
         @InjectView(R.id.img_download_index_downloaded) ImageView isIndexedDownloaded;
         @InjectView(R.id.img_download_item_downloaded) ImageView isDownloaded;
@@ -72,6 +73,7 @@ public class BookListAdapter extends BaseAdapter {
         }
 
         public void bind(Book b) {
+            acronym.setText(b.getInitials());
             itemName.setText(b.getName());
         }
     }

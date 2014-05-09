@@ -1,4 +1,4 @@
-package org.bspeice.minimalbible.activities.downloader;
+package org.bspeice.minimalbible.activities.downloader.manager;
 
 import android.util.Log;
 

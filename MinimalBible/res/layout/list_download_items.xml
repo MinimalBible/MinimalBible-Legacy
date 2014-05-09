@@ -3,7 +3,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="2dip">
+    android:padding="8dp" >
 
     <ImageView
         android:layout_width="wrap_content"
@@ -18,8 +18,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/txt_download_item_name"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_toRightOf="@+id/img_download_icon"
         android:layout_toLeftOf="@+id/img_download_index_downloaded" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/download_txt_item_acronym"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_toRightOf="@+id/img_download_icon"
+        android:layout_below="@+id/txt_download_item_name"/>
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -35,7 +46,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/img_download_item_downloaded"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         style="@style/AppBaseTheme.Borderless" />
 
 </RelativeLayout>
