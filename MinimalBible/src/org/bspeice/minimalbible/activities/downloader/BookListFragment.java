@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
+import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
@@ -48,13 +49,14 @@ public class BookListFragment extends Fragment {
     ListView downloadsAvailable;
 
     @Inject DownloadManager downloadManager;
-    @Inject DownloadPrefsManager prefsManager;
+
+    @Inject DownloadPrefs_ downloadPrefs;
 
 	private ProgressDialog refreshDialog;
 
     /**
      * Returns a new instance of this fragment for the given section number.
-     * TODO: This will need to be switched to an @Provides class
+     * TODO: This will need to be switched to an @Provides class maybe?
      */
     public static BookListFragment newInstance(BookCategory c) {
         BookListFragment fragment = new BookListFragment();
@@ -67,8 +69,9 @@ public class BookListFragment extends Fragment {
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
-        MinimalBible app = MinimalBible.getApplication(getActivity());
-        app.inject(this);
+        //TODO: Figure out why this doesn't work. Best guess is because the context from
+        //getApplication(getActivity()) isn't actually MinimalBible.getAppContext()
+        MinimalBible.getApplication().inject(this);
     }
 
     @Override
@@ -89,7 +92,7 @@ public class BookListFragment extends Fragment {
     }
 
  	public void displayModules() {
-		boolean dialogDisplayed = prefsManager.getShowedDownloadDialog();
+		boolean dialogDisplayed = downloadPrefs.showedDownloadDialog().get();
 		
 		if (!dialogDisplayed) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -154,12 +157,12 @@ public class BookListFragment extends Fragment {
 			DialogInterface.OnClickListener {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-			prefsManager.setShowedDownloadDialog(true);
+            downloadPrefs.showedDownloadDialog().put(true);
 
 			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE:
 				// Clicked ready to continue - allow downloading in the future
-				prefsManager.setDownloadEnabled(true);
+                downloadPrefs.hasEnabledDownload().put(true);
 
 				// And warn them that it has been enabled in the future.
 				Toast.makeText(getActivity(),
@@ -170,7 +173,7 @@ public class BookListFragment extends Fragment {
 
 			case DialogInterface.BUTTON_NEGATIVE:
 				// Clicked to not download - Permanently disable downloading
-				prefsManager.setDownloadEnabled(false);
+				downloadPrefs.hasEnabledDownload().put(false);
 				Toast.makeText(getActivity(),
 						"Disabling downloading. Re-enable it in settings.",
 						Toast.LENGTH_SHORT).show();

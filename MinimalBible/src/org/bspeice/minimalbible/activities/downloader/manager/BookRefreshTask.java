@@ -7,13 +7,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
-import org.bspeice.minimalbible.activities.downloader.DownloadPrefsManager;
+import org.bspeice.minimalbible.activities.downloader.DownloadPrefs_;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.install.InstallException;
 import org.crosswire.jsword.book.install.Installer;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,10 +23,11 @@ import de.greenrobot.event.EventBus;
 public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 	private static final String TAG = "EventBookRefreshTask";
 
-    // Refresh if last refresh date is after time below
-    private final Date refreshBefore = new Date(System.currentTimeMillis() -  604800000L); // 1 Week in millis
+    // If last refresh was before the below, force an internet refresh
+    private final Long refreshAfter = System.currentTimeMillis() - 604800000L; // 1 Week in millis
 
-    @Inject protected DownloadPrefsManager prefsManager;
+    @Inject
+    DownloadPrefs_ downloadPrefs;
 
 	private EventBus downloadBus;
 	private BookFilter filter;
@@ -52,7 +52,7 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 			if (doRefresh()) {
 				try {
 					i.reloadBookList();
-                    prefsManager.setDownloadRefreshedOn(new Date(System.currentTimeMillis()));
+                    downloadPrefs.downloadRefreshedOn().put(System.currentTimeMillis());
 				} catch (InstallException e) {
 					Log.e(TAG,
 							"Error downloading books from installer: "
@@ -88,10 +88,10 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
     }
 
     private boolean downloadEnabled() {
-        return prefsManager.getDownloadEnabled();
+        return downloadPrefs.hasEnabledDownload().get();
     }
 
     private boolean needsRefresh() {
-        return (prefsManager.getDownloadRefreshedOn().before(refreshBefore));
+        return (downloadPrefs.downloadRefreshedOn().get() > refreshAfter);
     }
 }

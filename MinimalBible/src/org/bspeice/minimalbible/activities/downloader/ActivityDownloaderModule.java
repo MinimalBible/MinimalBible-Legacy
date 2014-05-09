@@ -25,8 +25,6 @@ import de.greenrobot.event.EventBus;
 )
 public class ActivityDownloaderModule {
 
-    private final Context ctx = MinimalBible.getAppContext();
-
     /**
      * Provide a Singleton DownloadManager for injection
      * Note that we need to annotate Singleton here, only annotating on the
@@ -43,8 +41,8 @@ public class ActivityDownloaderModule {
         return new EventBus();
     }
 
-    @Provides @Singleton
-    DownloadPrefsManager providePrefsManager() {
-        return new DownloadPrefsManager(ctx);
+    @Provides //@Singleton
+    DownloadPrefs_ provideDownloadPrefs() {
+        return new DownloadPrefs_(MinimalBible.getApplication());
     }
 }

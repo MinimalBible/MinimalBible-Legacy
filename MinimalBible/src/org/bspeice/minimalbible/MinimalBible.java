@@ -19,6 +19,14 @@ public class MinimalBible extends Application {
 		return instance;
 	}
 
+    public static MinimalBible getApplication(Context ctx) {
+        return (MinimalBible)ctx.getApplicationContext();
+    }
+
+    public static MinimalBible getApplication() {
+        return (MinimalBible)getAppContext();
+    }
+
     @Override
     public void onCreate() {
         graph = ObjectGraph.create(new MinimalBibleModules());
@@ -27,13 +35,5 @@ public class MinimalBible extends Application {
 
     public void inject(Object o) {
         graph.inject(o);
-    }
-
-    public static MinimalBible getApplication(Context ctx) {
-        return (MinimalBible)ctx.getApplicationContext();
-    }
-
-    public static MinimalBible getApplication() {
-        return (MinimalBible)getAppContext();
     }
 }
