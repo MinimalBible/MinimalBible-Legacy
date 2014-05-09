@@ -1,35 +1,46 @@
 package org.bspeice.minimalbible.activities.downloader.manager;
 
-import java.util.LinkedList;
-import java.util.List;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
-import org.bspeice.minimalbible.MinimalBibleConstants;
+import org.bspeice.minimalbible.activities.downloader.DownloadPrefsManager;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.install.InstallException;
 import org.crosswire.jsword.book.install.Installer;
 
-import de.greenrobot.event.EventBus;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.util.Log;
+import javax.inject.Inject;
+
+import de.greenrobot.event.EventBus;
 
 public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 	private static final String TAG = "EventBookRefreshTask";
+
+    // Refresh if last refresh date is after time below
+    private final Date refreshBefore = new Date(System.currentTimeMillis() -  604800000L); // 1 Week in millis
+
+    @Inject protected DownloadPrefsManager prefsManager;
 
 	private EventBus downloadBus;
 	private BookFilter filter;
 
 	public BookRefreshTask(EventBus downloadBus) {
 		this.downloadBus = downloadBus;
+        MinimalBible.getApplication().inject(this);
 	}
 
 	public BookRefreshTask(EventBus downloadBus, BookFilter f) {
 		this.downloadBus = downloadBus;
 		this.filter = f;
+        MinimalBible.getApplication().inject(this);
 	}
 
 	@Override
@@ -41,6 +52,7 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 			if (doRefresh()) {
 				try {
 					i.reloadBookList();
+                    prefsManager.setDownloadRefreshedOn(new Date(System.currentTimeMillis()));
 				} catch (InstallException e) {
 					Log.e(TAG,
 							"Error downloading books from installer: "
@@ -66,12 +78,20 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 		// copy - likely something time-based, also check network state.
 		// Fun fact - jSword handles the caching for us.
 
-		SharedPreferences prefs = MinimalBible.getAppContext()
-				.getSharedPreferences(
-						MinimalBibleConstants.DOWNLOAD_PREFS_FILE,
-						Context.MODE_PRIVATE);
-
-		// Refresh if download enabled
-		return prefs.getBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED, false);
+        return (isWifi() && downloadEnabled() && needsRefresh());
 	}
+
+    private boolean isWifi() {
+        ConnectivityManager mgr = (ConnectivityManager)MinimalBible.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = mgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return networkInfo.isConnected();
+    }
+
+    private boolean downloadEnabled() {
+        return prefsManager.getDownloadEnabled();
+    }
+
+    private boolean needsRefresh() {
+        return (prefsManager.getDownloadRefreshedOn().before(refreshBefore));
+    }
 }

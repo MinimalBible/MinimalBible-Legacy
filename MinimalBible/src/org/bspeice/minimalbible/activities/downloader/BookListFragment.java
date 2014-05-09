@@ -3,9 +3,7 @@ package org.bspeice.minimalbible.activities.downloader;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,7 +17,6 @@ import android.widget.Toast;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import org.bspeice.minimalbible.MinimalBible;
-import org.bspeice.minimalbible.MinimalBibleConstants;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.EventBookList;
@@ -50,8 +47,8 @@ public class BookListFragment extends Fragment {
     @InjectView(R.id.lst_download_available)
     ListView downloadsAvailable;
 
-    @Inject
-    DownloadManager downloadManager;
+    @Inject DownloadManager downloadManager;
+    @Inject DownloadPrefsManager prefsManager;
 
 	private ProgressDialog refreshDialog;
 
@@ -92,12 +89,7 @@ public class BookListFragment extends Fragment {
     }
 
  	public void displayModules() {
-		SharedPreferences prefs = getActivity()
-				.getSharedPreferences(
-						MinimalBibleConstants.DOWNLOAD_PREFS_FILE,
-						Context.MODE_PRIVATE);
-		boolean dialogDisplayed = prefs.getBoolean(
-				MinimalBibleConstants.KEY_SHOWED_DOWNLOAD_DIALOG, false);
+		boolean dialogDisplayed = prefsManager.getShowedDownloadDialog();
 		
 		if (!dialogDisplayed) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -162,18 +154,12 @@ public class BookListFragment extends Fragment {
 			DialogInterface.OnClickListener {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-			SharedPreferences prefs = getActivity().getSharedPreferences(
-					MinimalBibleConstants.DOWNLOAD_PREFS_FILE,
-					Context.MODE_PRIVATE);
-			prefs.edit().putBoolean(MinimalBibleConstants.KEY_SHOWED_DOWNLOAD_DIALOG, true)
-				.commit();
+			prefsManager.setShowedDownloadDialog(true);
 
 			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE:
 				// Clicked ready to continue - allow downloading in the future
-				prefs.edit()
-						.putBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED,
-								true).commit();
+				prefsManager.setDownloadEnabled(true);
 
 				// And warn them that it has been enabled in the future.
 				Toast.makeText(getActivity(),
@@ -184,9 +170,7 @@ public class BookListFragment extends Fragment {
 
 			case DialogInterface.BUTTON_NEGATIVE:
 				// Clicked to not download - Permanently disable downloading
-				prefs.edit()
-						.putBoolean(MinimalBibleConstants.KEY_DOWNLOAD_ENABLED,
-								false).commit();
+				prefsManager.setDownloadEnabled(false);
 				Toast.makeText(getActivity(),
 						"Disabling downloading. Re-enable it in settings.",
 						Toast.LENGTH_SHORT).show();

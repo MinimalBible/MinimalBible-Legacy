@@ -1,6 +1,11 @@
-package org.bspeice.minimalbible.activities.downloader.manager;
+package org.bspeice.minimalbible.activities.downloader;
 
-import org.bspeice.minimalbible.activities.downloader.BookListFragment;
+import android.app.Activity;
+import android.content.Context;
+
+import org.bspeice.minimalbible.MinimalBible;
+import org.bspeice.minimalbible.activities.downloader.manager.BookRefreshTask;
+import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 
 import javax.inject.Singleton;
 
@@ -14,10 +19,13 @@ import de.greenrobot.event.EventBus;
 @Module(
         injects = {
             BookListFragment.class,
-            DownloadManager.class
+            DownloadManager.class,
+            BookRefreshTask.class
         }
 )
 public class ActivityDownloaderModule {
+
+    private final Context ctx = MinimalBible.getAppContext();
 
     /**
      * Provide a Singleton DownloadManager for injection
@@ -33,5 +41,10 @@ public class ActivityDownloaderModule {
     @Provides
     EventBus provideBus() {
         return new EventBus();
+    }
+
+    @Provides @Singleton
+    DownloadPrefsManager providePrefsManager() {
+        return new DownloadPrefsManager(ctx);
     }
 }
