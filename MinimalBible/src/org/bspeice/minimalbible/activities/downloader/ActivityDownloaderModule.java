@@ -1,8 +1,5 @@
 package org.bspeice.minimalbible.activities.downloader;
 
-import android.app.Activity;
-import android.content.Context;
-
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.activities.downloader.manager.BookRefreshTask;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
@@ -40,6 +37,7 @@ public class ActivityDownloaderModule {
     EventBus provideBus() {
         return new EventBus();
     }
+
 
     @Provides //@Singleton
     DownloadPrefs_ provideDownloadPrefs() {

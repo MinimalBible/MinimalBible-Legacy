@@ -5,10 +5,11 @@ import org.androidannotations.annotations.sharedpreferences.DefaultLong;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 
 /**
- * Created by Bradlee Speice on 5/8/2014.
+ * Renamed while waiting for https://github.com/square/dagger/issues/410 to get resolved.
+ * Once the issue is fixed, this should go back to being DownloadPrefs
  */
 @SharedPref(value= SharedPref.Scope.UNIQUE)
-public interface DownloadPrefs {
+public interface _DownloadPrefs {
 
     @DefaultBoolean(false)
     boolean hasEnabledDownload();
