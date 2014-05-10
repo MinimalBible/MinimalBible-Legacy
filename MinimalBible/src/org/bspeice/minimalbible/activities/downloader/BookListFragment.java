@@ -23,9 +23,12 @@ import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.EventBookList;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
+import org.crosswire.jsword.book.BookComparators;
 import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.FilterUtil;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -69,8 +72,6 @@ public class BookListFragment extends Fragment {
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
-        //TODO: Figure out why this doesn't work. Best guess is because the context from
-        //getApplication(getActivity()) isn't actually MinimalBible.getAppContext()
         MinimalBible.getApplication().inject(this);
     }
 
@@ -141,10 +142,15 @@ public class BookListFragment extends Fragment {
     public void displayBooks(List<Book> bookList) {
         try {
             // TODO: Should the filter be applied earlier in the process?
+            // TODO: Sort books by name?
+            List<Book> displayList;
+
             BookCategory c = BookCategory.fromString(getArguments().getString(ARG_BOOK_CATEGORY));
             BookFilter f = FilterUtil.filterFromCategory(c);
-            List<Book> filteredBooks = FilterUtil.applyFilter(bookList, f);
-            downloadsAvailable.setAdapter(new BookListAdapter(this.getActivity(), filteredBooks));
+            displayList = FilterUtil.applyFilter(bookList, f);
+            Collections.sort(displayList, BookComparators.getInitialComparator());
+
+            downloadsAvailable.setAdapter(new BookListAdapter(this.getActivity(), displayList));
             setInsets(getActivity(), downloadsAvailable);
         } catch (FilterUtil.InvalidFilterCategoryMappingException e) {
             // To be honest, there should be no reason you end up here.
