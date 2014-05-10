@@ -59,7 +59,7 @@ public class BookListFragment extends Fragment {
 
     /**
      * Returns a new instance of this fragment for the given section number.
-     * TODO: This will need to be switched to an @Provides class maybe?
+     * TODO: Switch to AutoFactory/@Provides rather than inline creation.
      */
     public static BookListFragment newInstance(BookCategory c) {
         BookListFragment fragment = new BookListFragment();
