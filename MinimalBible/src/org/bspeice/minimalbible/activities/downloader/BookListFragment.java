@@ -121,8 +121,8 @@ public class BookListFragment extends Fragment {
         }
 	}
 
-    /*
-    Used by GreenRobot for notifying us that the book refresh is complete
+    /**
+     * Used by GreenRobot for notifying us that the book refresh is complete
      */
     @SuppressWarnings("unused")
 	public void onEventMainThread(EventBookList event) {
