@@ -8,9 +8,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
+/**
+ * Wrapper for activities in MinimalBible to make sure we can support
+ * common functionality between them all.
+ */
 public class BaseActivity extends ActionBarActivity {
-
-	// BaseActivity to take care of some stuff like setting the action bar color
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

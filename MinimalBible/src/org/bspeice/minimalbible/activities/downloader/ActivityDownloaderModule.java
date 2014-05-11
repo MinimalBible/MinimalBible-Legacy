@@ -26,7 +26,7 @@ public class ActivityDownloaderModule {
      * Provide a Singleton DownloadManager for injection
      * Note that we need to annotate Singleton here, only annotating on the
      * DownloadManager itself is not enough.
-     * @return global DownloadManager instance
+     * @return Global DownloadManager instance
      */
     @Provides @Singleton
     DownloadManager provideDownloadManager() {

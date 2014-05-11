@@ -4,6 +4,10 @@ import java.util.List;
 
 import org.crosswire.jsword.book.Book;
 
+/**
+ * POJO class for {@link de.greenrobot.event.EventBus} to broadcast whenever
+ * we've finished updating the book list.
+ */
 public class EventBookList {
 	
 	private List<Book> bookList;

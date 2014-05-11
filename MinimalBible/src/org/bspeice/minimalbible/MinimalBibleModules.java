@@ -5,7 +5,7 @@ import org.bspeice.minimalbible.activities.ActivityModules;
 import dagger.Module;
 
 /**
- * Modules for the global application
+ * Master module for MinimalBible
  */
 @Module(
     injects = {

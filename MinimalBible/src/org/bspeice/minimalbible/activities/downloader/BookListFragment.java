@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.readystatesoftware.systembartint.SystemBarTintManager;
-
-import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
+import org.bspeice.minimalbible.activities.BaseFragment;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.EventBookList;
 import org.crosswire.jsword.book.Book;
@@ -27,7 +23,6 @@ import org.crosswire.jsword.book.BookComparators;
 import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.FilterUtil;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,7 +35,7 @@ import butterknife.InjectView;
  * A placeholder fragment containing a simple view.
  */
 
-public class BookListFragment extends Fragment {
+public class BookListFragment extends BaseFragment {
     /**
      * The fragment argument representing the section number for this fragment.
      */
@@ -72,7 +67,7 @@ public class BookListFragment extends Fragment {
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
-        MinimalBible.getApplication().inject(this);
+        MinimalBible.getApplication().inject(this); // Injection for Dagger goes here, not ctor
     }
 
     @Override
@@ -92,6 +87,10 @@ public class BookListFragment extends Fragment {
                 .getString(ARG_BOOK_CATEGORY));
     }
 
+    /**
+     * Trigger the functionality to display a list of modules. Prompts user if downloading
+     * from the internet is allowable.
+     */
  	public void displayModules() {
 		boolean dialogDisplayed = downloadPrefs.showedDownloadDialog().get();
 		
@@ -108,16 +107,22 @@ public class BookListFragment extends Fragment {
 		}
 	}
 
+    /**
+     * Do the work of refreshing modules (download manager handles using cached copy vs. actual
+     * refresh), and then displaying them when ready.
+     */
 	private void refreshModules() {
-		EventBookList bookList = downloadManager.getDownloadBus().getStickyEvent(EventBookList.class);
+        // Check if the downloadManager has already refreshed everything
+		List<Book> bookList = downloadManager.getBookList();
 		if (bookList == null) {
-            downloadManager.getDownloadBus().registerSticky(this);
+            // downloadManager is in progress of refreshing
+            downloadManager.getDownloadBus().register(this);
             refreshDialog = new ProgressDialog(getActivity());
             refreshDialog.setMessage("Refreshing available modules...");
             refreshDialog.setCancelable(false);
             refreshDialog.show();
         } else {
-            displayBooks(bookList.getBookList());
+            displayBooks(bookList);
         }
 	}
 
@@ -132,17 +137,13 @@ public class BookListFragment extends Fragment {
 		displayBooks(event.getBookList());
 	}
 
-    public static void setInsets(Activity context, View view) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return;
-        SystemBarTintManager tintManager = new SystemBarTintManager(context);
-        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
-        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), config.getPixelInsetBottom());
-    }
-
+    /**
+     * Do the hard work of creating the Adapter and displaying books.
+     * @param bookList The (unfiltered) list of {link org.crosswire.jsword.Book}s to display
+     */
     public void displayBooks(List<Book> bookList) {
         try {
             // TODO: Should the filter be applied earlier in the process?
-            // TODO: Sort books by name?
             List<Book> displayList;
 
             BookCategory c = BookCategory.fromString(getArguments().getString(ARG_BOOK_CATEGORY));
@@ -156,7 +157,6 @@ public class BookListFragment extends Fragment {
             // To be honest, there should be no reason you end up here.
             Log.e(TAG, e.getMessage());
         }
-
     }
 
 	private class DownloadDialogListener implements

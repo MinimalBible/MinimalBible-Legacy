@@ -44,6 +44,7 @@ public class DownloadActivity extends BaseActivity implements
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
 		// update the main content by replacing fragments
+        //TODO: Switch to AutoFactory pattern, rather than newInstance()
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		fragmentManager
 				.beginTransaction()

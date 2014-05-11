@@ -9,7 +9,6 @@ import android.util.Log;
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.activities.downloader.DownloadPrefs_;
 import org.crosswire.jsword.book.Book;
-import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.install.InstallException;
 import org.crosswire.jsword.book.install.Installer;
 
@@ -30,16 +29,9 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
     DownloadPrefs_ downloadPrefs;
 
 	private EventBus downloadBus;
-	private BookFilter filter;
 
 	public BookRefreshTask(EventBus downloadBus) {
 		this.downloadBus = downloadBus;
-        MinimalBible.getApplication().inject(this);
-	}
-
-	public BookRefreshTask(EventBus downloadBus, BookFilter f) {
-		this.downloadBus = downloadBus;
-		this.filter = f;
         MinimalBible.getApplication().inject(this);
 	}
 
@@ -60,11 +52,7 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 				}
 			}
 
-			if (filter != null) {
-				books.addAll(i.getBooks(filter));
-			} else {
-				books.addAll(i.getBooks());
-			}
+			books.addAll(i.getBooks());
 			publishProgress(++index, params.length);
 		}
 
