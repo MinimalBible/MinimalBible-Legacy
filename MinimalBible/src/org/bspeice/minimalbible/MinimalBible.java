@@ -49,7 +49,7 @@ public class MinimalBible extends Application {
      */
     @Override
     public void onCreate() {
-        graph = ObjectGraph.create(new MinimalBibleModules());
+        graph = ObjectGraph.create(MinimalBibleModules.class);
         graph.inject(this);
     }
 

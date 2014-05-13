@@ -46,6 +46,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/img_download_item_downloaded"
         android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_action_download"
         style="@style/AppBaseTheme.Borderless" />
 
 </RelativeLayout>
