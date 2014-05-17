@@ -17,7 +17,6 @@ repositories {
 dependencies {
     compile project(path: ':jsword-minimalbible', configuration: 'buildJSword')
     compile project(':appcompat_v7')
-    compile project(':ProgressWheel')
 
     apt "org.androidannotations:androidannotations:3.0+"
     compile "org.androidannotations:androidannotations-api:3.0+"
@@ -35,7 +34,7 @@ dependencies {
 
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile 'de.greenrobot:eventbus:2.2.0'
-    compile 'com.joanzapata.android:android-iconify:1.0.+'
+    // compile 'com.joanzapata.android:android-iconify:1.0.+'
 
     // Handled by appcompat
     // compile 'com.google.android:support-v4:r7'
@@ -75,6 +74,7 @@ android {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
 }
 

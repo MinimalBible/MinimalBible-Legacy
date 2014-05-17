@@ -5,9 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.IconButton;
+import android.widget.IconTextView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.joanzapata.android.iconify.Iconify;
 
 import org.bspeice.minimalbible.R;
 import org.crosswire.jsword.book.Book;
@@ -63,8 +68,7 @@ public class BookListAdapter extends BaseAdapter {
         @InjectView(R.id.img_download_icon) ImageView downloadIcon;
         @InjectView(R.id.download_txt_item_acronym) TextView acronym;
         @InjectView(R.id.txt_download_item_name) TextView itemName;
-        @InjectView(R.id.img_download_index_downloaded) ImageView isIndexedDownloaded;
-        @InjectView(R.id.img_download_item_downloaded) ImageView isDownloaded;
+        @InjectView(R.id.download_ibtn_download) ImageButton isDownloaded;
 
         public BookItemView (Context ctx) {
             super(ctx);

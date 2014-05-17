@@ -10,9 +10,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/img_download_icon"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="0dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp" />
+        android:layout_alignParentTop="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -22,12 +20,13 @@
         android:maxLines="1"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_toRightOf="@+id/img_download_icon"
-        android:layout_toLeftOf="@+id/img_download_index_downloaded" />
+        android:layout_toLeftOf="@+id/download_ibtn_download" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/download_txt_item_acronym"
+        android:paddingTop="4dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_toRightOf="@+id/img_download_icon"
         android:layout_below="@+id/txt_download_item_name"/>
@@ -35,18 +34,9 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/img_download_index_downloaded"
-        android:src="@drawable/ic_action_search"
-        style="@style/AppBaseTheme.Borderless"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/img_download_item_downloaded" />
-
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/img_download_item_downloaded"
+        android:background="@drawable/ic_action_download"
         android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_action_download"
+        android:id="@+id/download_ibtn_download"
         style="@style/AppBaseTheme.Borderless" />
 
 </RelativeLayout>

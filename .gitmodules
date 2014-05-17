@@ -4,6 +4,3 @@
 [submodule "jsword-minimalbible"]
 	path = jsword-minimalbible
 	url = https://github.com/MinimalBible/jsword-minimalbible.git
-[submodule "ProgressWheel"]
-	path = ProgressWheel
-	url = git@github.com:Todd-Davies/ProgressWheel
