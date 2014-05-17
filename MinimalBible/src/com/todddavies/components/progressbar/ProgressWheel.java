@@ -1,4 +1,4 @@
-package org.bspeice.minimalbible;
+package com.todddavies.components.progressbar;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.View;
+
+import org.bspeice.minimalbible.R;
 
 
 /**

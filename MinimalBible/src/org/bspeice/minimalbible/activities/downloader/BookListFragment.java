@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.f2prateek.dart.InjectExtra;
+
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseFragment;
@@ -38,6 +40,7 @@ import butterknife.InjectView;
 public class BookListFragment extends BaseFragment {
     /**
      * The fragment argument representing the section number for this fragment.
+     * Not a candidate for Dart (yet) because I would have to write a Parcelable around it.
      */
     private static final String ARG_BOOK_CATEGORY = "book_category";
 

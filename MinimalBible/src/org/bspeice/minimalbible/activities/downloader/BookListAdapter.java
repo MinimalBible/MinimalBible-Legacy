@@ -5,15 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.IconButton;
-import android.widget.IconTextView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.joanzapata.android.iconify.Iconify;
-
+import com.todddavies.components.progressbar.ProgressWheel;
 import org.bspeice.minimalbible.R;
 import org.crosswire.jsword.book.Book;
 
@@ -21,6 +18,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Adapter to inflate list_download_items.xml
@@ -69,6 +67,7 @@ public class BookListAdapter extends BaseAdapter {
         @InjectView(R.id.download_txt_item_acronym) TextView acronym;
         @InjectView(R.id.txt_download_item_name) TextView itemName;
         @InjectView(R.id.download_ibtn_download) ImageButton isDownloaded;
+        @InjectView(R.id.download_prg_download) ProgressWheel downloadProgress;
 
         public BookItemView (Context ctx) {
             super(ctx);
@@ -79,6 +78,13 @@ public class BookListAdapter extends BaseAdapter {
         public void bind(Book b) {
             acronym.setText(b.getInitials());
             itemName.setText(b.getName());
+        }
+
+        @OnClick(R.id.download_ibtn_download)
+        public void onDownloadItem(View v) {
+            isDownloaded.setVisibility(View.GONE);
+            downloadProgress.setVisibility(View.VISIBLE);
+            downloadProgress.setProgress(75); // Out of 360
         }
     }
 }
