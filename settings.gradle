@@ -1,3 +1,4 @@
 include ':appcompat_v7'
 include ':MinimalBible'
 include ':jsword-minimalbible'
+include ':ProgressWheel'
