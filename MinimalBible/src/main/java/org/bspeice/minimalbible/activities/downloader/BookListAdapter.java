@@ -1,13 +1,11 @@
 package org.bspeice.minimalbible.activities.downloader;
 
-import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.todddavies.components.progressbar.ProgressWheel;
@@ -26,11 +24,11 @@ import butterknife.OnClick;
 public class BookListAdapter extends BaseAdapter {
     private List<Book> bookList;
 
-    private Context ctx;
+    private LayoutInflater inflater;
 
-    public BookListAdapter(Context context, List<Book> bookList) {
+    public BookListAdapter(LayoutInflater inflater, List<Book> bookList) {
         this.bookList = bookList;
-        this.ctx = context;
+        this.inflater = inflater;
     }
 
     @Override
@@ -50,38 +48,40 @@ public class BookListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        BookItemView itemView;
-        if (convertView == null) {
-            itemView = new BookItemView(this.ctx);
+        BookItemHolder viewHolder;
+        // Nasty Android issue - if you don't check the getTag(), Android will start recycling,
+        // and you'll get some really strange issues
+        if (convertView == null || convertView.getTag() == null) {
+            convertView = inflater.inflate(R.layout.list_download_items, null);
+            viewHolder = new BookItemHolder(convertView);
         } else {
-            itemView = (BookItemView) convertView;
+            viewHolder = (BookItemHolder) convertView.getTag();
         }
 
-        itemView.bind(getItem(position));
-        return itemView;
+        viewHolder.bindHolder(position);
+        return convertView;
     }
 
-    public class BookItemView extends RelativeLayout {
+    public class BookItemHolder {
 
-        @InjectView(R.id.img_download_icon) ImageView downloadIcon;
         @InjectView(R.id.download_txt_item_acronym) TextView acronym;
         @InjectView(R.id.txt_download_item_name) TextView itemName;
         @InjectView(R.id.download_ibtn_download) ImageButton isDownloaded;
         @InjectView(R.id.download_prg_download) ProgressWheel downloadProgress;
 
-        public BookItemView (Context ctx) {
-            super(ctx);
-            View v = LayoutInflater.from(ctx).inflate(R.layout.list_download_items, this);
+        public BookItemHolder(View v) {
             ButterKnife.inject(this, v);
         }
 
-        public void bind(Book b) {
+        public void bindHolder(int position) {
+            Book b = BookListAdapter.this.getItem(position);
             acronym.setText(b.getInitials());
             itemName.setText(b.getName());
         }
 
         @OnClick(R.id.download_ibtn_download)
         public void onDownloadItem(View v) {
+            Log.d("BookListAdapter", v.toString());
             isDownloaded.setVisibility(View.GONE);
             downloadProgress.setVisibility(View.VISIBLE);
             downloadProgress.setProgress(75); // Out of 360

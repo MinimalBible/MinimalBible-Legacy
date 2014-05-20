@@ -6,13 +6,6 @@
     android:layout_height="match_parent"
     android:padding="8dp">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/img_download_icon"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,8 +13,8 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_toRightOf="@+id/img_download_icon"
-        android:layout_toLeftOf="@+id/download_ibtn_download" />
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/download_ibtn_download"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -29,7 +22,7 @@
         android:id="@+id/download_txt_item_acronym"
         android:paddingTop="4dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_toRightOf="@+id/img_download_icon"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/txt_download_item_name"/>
 
     <ImageButton

@@ -54,6 +54,7 @@ public class BookListFragment extends BaseFragment {
     @Inject DownloadPrefs_ downloadPrefs;
 
 	private ProgressDialog refreshDialog;
+    private LayoutInflater inflater;
 
     /**
      * Returns a new instance of this fragment for the given section number.
@@ -76,6 +77,7 @@ public class BookListFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        this.inflater = inflater;
         View rootView = inflater.inflate(R.layout.fragment_download, container,
                 false);
         ButterKnife.inject(this, rootView);
@@ -154,7 +156,7 @@ public class BookListFragment extends BaseFragment {
             displayList = FilterUtil.applyFilter(bookList, f);
             Collections.sort(displayList, BookComparators.getInitialComparator());
 
-            downloadsAvailable.setAdapter(new BookListAdapter(this.getActivity(), displayList));
+            downloadsAvailable.setAdapter(new BookListAdapter(inflater, displayList));
             setInsets(getActivity(), downloadsAvailable);
         } catch (FilterUtil.InvalidFilterCategoryMappingException e) {
             // To be honest, there should be no reason you end up here.

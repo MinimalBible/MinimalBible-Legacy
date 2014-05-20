@@ -47,16 +47,16 @@ android {
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
+            java.srcDirs = ['src/main/java']
+            resources.srcDirs = ['src/main/res']
             aidl.srcDirs = ['src']
             renderscript.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
+            res.srcDirs = ['src/main/res']
+            assets.srcDirs = ['src/main/assets']
         }
 
         // Move the tests to tests/java, tests/res, etc...
-        instrumentTest.setRoot('tests')
+        instrumentTest.setRoot('src/test')
 
         // Move the build types to build-types/<type>
         // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
@@ -77,5 +77,3 @@ android {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
 }
-
-
