@@ -70,6 +70,12 @@ public class BookListAdapter extends BaseAdapter {
 
     public static class BookItemHolder {
 
+        // TODO: The holder should register and unregister itself for DownloadProgress events
+        // so that we can display live updates.
+        // TODO: Do we need to worry about lifecycle since this will be a static class?
+        // TODO: Switch this to its own class (non-static) so we can inject it,
+        // and it doesn't persist in memory
+
         @InjectView(R.id.download_txt_item_acronym) TextView acronym;
         @InjectView(R.id.txt_download_item_name) TextView itemName;
         @InjectView(R.id.download_ibtn_download) ImageButton isDownloaded;
