@@ -18,7 +18,8 @@ import de.greenrobot.event.EventBus;
         injects = {
             BookListFragment.class,
             DownloadManager.class,
-            BookRefreshTask.class
+            BookRefreshTask.class,
+            BookListAdapter.BookItemHolder.class
         }
 )
 public class ActivityDownloaderModule {

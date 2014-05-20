@@ -8,6 +8,8 @@ import org.crosswire.jsword.book.BookCategory;
 import org.crosswire.jsword.book.install.InstallManager;
 import org.crosswire.jsword.book.install.Installer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +26,12 @@ public class DownloadManager {
     /**
      * Cached copy of modules that are available so we don't refresh for everyone who requests it.
      */
-    private List<Book> availableModules = null;
+    private List<Book> availableModules;
+
+    /**
+     * Cached copy of downloads in progress so views displaying this info can get it quickly.
+     */
+    private Map<Book, DownloadProgressEvent> inProgressDownloads;
 
     @Inject
     protected EventBus downloadBus;
@@ -40,6 +47,7 @@ public class DownloadManager {
         MinimalBible.getApplication().inject(this);
 		setDownloadDir();
 		refreshModules();
+        inProgressDownloads = new HashMap<Book, DownloadProgressEvent>();
 	}
 
     /**
@@ -107,4 +115,31 @@ public class DownloadManager {
 	public EventBus getDownloadBus() {
 		return this.downloadBus;
 	}
+
+    /**
+     * Handle a book download progress event.
+     * Mostly responsible for caching the in progress status to check on it easily
+     * @param event
+     */
+    public void onEvent(DownloadProgressEvent event) {
+        if (event.isComplete() && inProgressDownloads.containsKey(event.getB())) {
+            inProgressDownloads.remove(event.getB());
+        } else {
+            inProgressDownloads.put(event.getB(), event);
+        }
+    }
+
+    /**
+     * Check the status of a book download in progress.
+     * @param b
+     * @return The most recent DownloadProgressEvent for the book, or null if not downloading
+     */
+    public DownloadProgressEvent getInProgressDownloadProgress(Book b) {
+        if (inProgressDownloads.containsKey(b)) {
+            return inProgressDownloads.get(b);
+        } else {
+            return null;
+        }
+    }
+
 }
