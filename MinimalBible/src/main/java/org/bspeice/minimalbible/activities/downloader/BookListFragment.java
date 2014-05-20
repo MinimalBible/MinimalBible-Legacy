@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.f2prateek.dart.InjectExtra;
-
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseFragment;
@@ -51,7 +49,7 @@ public class BookListFragment extends BaseFragment {
 
     @Inject DownloadManager downloadManager;
 
-    @Inject DownloadPrefs_ downloadPrefs;
+    @Inject DownloadPrefs downloadPrefs;
 
 	private ProgressDialog refreshDialog;
     private LayoutInflater inflater;
@@ -97,7 +95,7 @@ public class BookListFragment extends BaseFragment {
      * from the internet is allowable.
      */
  	public void displayModules() {
-		boolean dialogDisplayed = downloadPrefs.showedDownloadDialog().get();
+		boolean dialogDisplayed = downloadPrefs.hasShownDownloadDialog();
 		
 		if (!dialogDisplayed) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -168,12 +166,12 @@ public class BookListFragment extends BaseFragment {
 			DialogInterface.OnClickListener {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-            downloadPrefs.showedDownloadDialog().put(true);
+            downloadPrefs.hasShownDownloadDialog(true);
 
 			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE:
 				// Clicked ready to continue - allow downloading in the future
-                downloadPrefs.hasEnabledDownload().put(true);
+                downloadPrefs.hasEnabledDownload(true);
 
 				// And warn them that it has been enabled in the future.
 				Toast.makeText(getActivity(),
@@ -184,7 +182,7 @@ public class BookListFragment extends BaseFragment {
 
 			case DialogInterface.BUTTON_NEGATIVE:
 				// Clicked to not download - Permanently disable downloading
-				downloadPrefs.hasEnabledDownload().put(false);
+				downloadPrefs.hasEnabledDownload(false);
 				Toast.makeText(getActivity(),
 						"Disabling downloading. Re-enable it in settings.",
 						Toast.LENGTH_SHORT).show();

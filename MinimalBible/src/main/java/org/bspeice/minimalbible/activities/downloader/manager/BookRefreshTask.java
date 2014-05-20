@@ -7,7 +7,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
-import org.bspeice.minimalbible.activities.downloader.DownloadPrefs_;
+import org.bspeice.minimalbible.activities.downloader.DownloadPrefs;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.install.InstallException;
 import org.crosswire.jsword.book.install.Installer;
@@ -26,7 +26,7 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
     private final Long refreshAfter = System.currentTimeMillis() - 604800000L; // 1 Week in millis
 
     @Inject
-    DownloadPrefs_ downloadPrefs;
+    DownloadPrefs downloadPrefs;
 
 	private EventBus downloadBus;
 
@@ -44,7 +44,7 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 			if (doRefresh()) {
 				try {
 					i.reloadBookList();
-                    downloadPrefs.downloadRefreshedOn().put(System.currentTimeMillis());
+                    downloadPrefs.downloadRefreshedOn(System.currentTimeMillis());
 				} catch (InstallException e) {
 					Log.e(TAG,
 							"Error downloading books from installer: "
@@ -76,10 +76,10 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
     }
 
     private boolean downloadEnabled() {
-        return downloadPrefs.hasEnabledDownload().get();
+        return downloadPrefs.hasEnabledDownload();
     }
 
     private boolean needsRefresh() {
-        return (downloadPrefs.downloadRefreshedOn().get() > refreshAfter);
+        return (downloadPrefs.downloadRefreshedOn() > refreshAfter);
     }
 }

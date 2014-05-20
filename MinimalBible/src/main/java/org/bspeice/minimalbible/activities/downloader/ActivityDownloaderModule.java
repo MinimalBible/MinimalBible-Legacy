@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import de.devland.esperandro.Esperandro;
 import de.greenrobot.event.EventBus;
 
 /**
@@ -40,7 +41,7 @@ public class ActivityDownloaderModule {
 
 
     @Provides //@Singleton
-    DownloadPrefs_ provideDownloadPrefs() {
-        return new DownloadPrefs_(MinimalBible.getApplication());
+    DownloadPrefs provideDownloadPrefs() {
+        return Esperandro.getPreferences(DownloadPrefs.class, MinimalBible.getAppContext());
     }
 }
