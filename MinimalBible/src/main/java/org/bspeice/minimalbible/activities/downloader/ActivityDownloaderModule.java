@@ -19,7 +19,7 @@ import de.greenrobot.event.EventBus;
             BookListFragment.class,
             DownloadManager.class,
             BookRefreshTask.class,
-            BookListAdapter.BookItemHolder.class
+            BookItemHolder.class
         }
 )
 public class ActivityDownloaderModule {
