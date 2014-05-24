@@ -60,4 +60,6 @@ public class MinimalBible extends Application {
     public void inject(Object o) {
         graph.inject(o);
     }
+
+    public ObjectGraph getObjGraph() { return graph; }
 }

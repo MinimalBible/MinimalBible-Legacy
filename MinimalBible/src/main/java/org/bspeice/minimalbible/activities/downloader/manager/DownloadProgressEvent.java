@@ -3,11 +3,14 @@ package org.bspeice.minimalbible.activities.downloader.manager;
 import org.crosswire.jsword.book.Book;
 
 /**
- * Created by bspeice on 5/19/14.
+ * Used for notifying that a book's download progress is ongoing
  */
 public class DownloadProgressEvent {
     private int progress;
     private Book b;
+
+    public static final int PROGRESS_COMPLETE = 100;
+    public static final int PROGRESS_BEGINNING = 0;
 
     public DownloadProgressEvent(int progress, Book b) {
         this.progress = progress;

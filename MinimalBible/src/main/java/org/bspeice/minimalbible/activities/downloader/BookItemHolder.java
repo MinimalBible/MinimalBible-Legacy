@@ -1,6 +1,5 @@
 package org.bspeice.minimalbible.activities.downloader;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -55,12 +54,18 @@ public class BookItemHolder {
 
     @OnClick(R.id.download_ibtn_download)
     public void onDownloadItem(View v) {
-        Log.d("BookListAdapter", v.toString());
-        displayProgress(0); // Can assume 0 since the download is now starting
-        // TODO: Write a unit test to make sure that this is called - displayProgress() assumes it
+        downloadManager.getDownloadBus().register(this);
+        downloadManager.getDownloadBus()
+                .post(new DownloadProgressEvent(DownloadProgressEvent.PROGRESS_BEGINNING, b));
 
         // TODO: Kick off a service to actually do the downloading, rather than simulate
         downloadManager.getDownloadBus().post(new DownloadProgressEvent(47, b));
+    }
+
+    public void onEventMainThread(DownloadProgressEvent event) {
+        if (event.getB().equals(this.b)) {
+            displayProgress((int) event.toCircular());
+        }
     }
 
     /**
@@ -70,7 +75,7 @@ public class BookItemHolder {
     private void displayProgress(int progress) {
 
 
-        if (progress <= 0) {
+        if (progress == DownloadProgressEvent.PROGRESS_BEGINNING) {
             // Download starting
             RelativeLayout.LayoutParams acronymParams =
                     (RelativeLayout.LayoutParams)acronym.getLayoutParams();
