@@ -4,17 +4,11 @@ import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
 import org.crosswire.common.progress.JobManager;
-import org.crosswire.common.progress.WorkEvent;
-import org.crosswire.common.progress.WorkListener;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.install.InstallException;
 import org.crosswire.jsword.book.install.Installer;
 
-import java.util.UUID;
-
 import javax.inject.Inject;
-
-import de.greenrobot.event.EventBus;
 
 /**
  * Created by bspeice on 5/12/14.
@@ -25,6 +19,7 @@ public class BookDownloadThread {
 
     @Inject
     DownloadManager downloadManager;
+    @Inject RefreshManager refreshManager;
 
     public BookDownloadThread() {
         MinimalBible.getApplication().inject(this);
@@ -34,7 +29,7 @@ public class BookDownloadThread {
         // So, the JobManager can't be injected, but we'll make do
 
         // First, look up where the Book came from
-        final Installer i = downloadManager.installerFromBook(b);
+        final Installer i = refreshManager.installerFromBook(b);
 
         final Thread worker = new Thread() {
             @Override
@@ -47,17 +42,19 @@ public class BookDownloadThread {
             }
         };
         worker.start();
+        // The worker automatically communicates with the JobManager for its progress.
 
-        JobManager.createJob(getJobId(b), b.getName(), worker);
-        downloadManager.getRefreshBus().post(new DownloadProgressEvent(DownloadProgressEvent.PROGRESS_BEGINNING, b));
+        downloadManager.getDownloadBus().post(new DLProgressEvent(DLProgressEvent.PROGRESS_BEGINNING, b));
     }
 
     /**
-     * Return a job ID for a given book. Must be consistent per book.
+     * Build what the installer creates the job name as.
+     * Likely prone to be brittle.
+     * TODO: Make sure to test that this is an accurate job name
      * @param b
-     * @return A string representing this job IDs
+     * @return
      */
     public static String getJobId(Book b) {
-        return b.toString();
+        return "INSTALL_BOOK-" + b.getInitials().toUpperCase();
     }
 }

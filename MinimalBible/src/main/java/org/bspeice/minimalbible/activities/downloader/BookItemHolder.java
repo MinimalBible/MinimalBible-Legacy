@@ -1,5 +1,6 @@
 package org.bspeice.minimalbible.activities.downloader;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -9,8 +10,9 @@ import com.todddavies.components.progressbar.ProgressWheel;
 
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
+import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadManager;
+import org.bspeice.minimalbible.activities.downloader.manager.DLProgressEvent;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
-import org.bspeice.minimalbible.activities.downloader.manager.DownloadProgressEvent;
 import org.crosswire.jsword.book.Book;
 
 import javax.inject.Inject;
@@ -18,7 +20,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
 
 /**
 * Created by bspeice on 5/20/14.
@@ -34,6 +35,7 @@ public class BookItemHolder {
     @InjectView(R.id.download_prg_download) ProgressWheel downloadProgress;
 
     @Inject DownloadManager downloadManager;
+    @Inject BookDownloadManager bookDownloadManager;
 
     Book b;
 
@@ -46,21 +48,21 @@ public class BookItemHolder {
     public void bindHolder() {
         acronym.setText(b.getInitials());
         itemName.setText(b.getName());
-        DownloadProgressEvent downloadProgressEvent = downloadManager.getInProgressDownloadProgress(b);
-        if (downloadProgressEvent != null) {
-            displayProgress((int) downloadProgressEvent.toCircular());
+        DLProgressEvent dlProgressEvent = bookDownloadManager.getInProgressDownloadProgress(b);
+        if (dlProgressEvent != null) {
+            displayProgress((int) dlProgressEvent.toCircular());
         }
         // TODO: Display a remove icon if the book has been downloaded.
     }
 
     @OnClick(R.id.download_ibtn_download)
     public void onDownloadItem(View v) {
-        downloadManager.getRefreshBus().register(this);
-        downloadManager.installBook(this.b);
+        downloadManager.getDownloadBus().register(this);
+        bookDownloadManager.installBook(this.b);
     }
 
-    public void onEventMainThread(DownloadProgressEvent event) {
-        if (event.getB().equals(b)) {
+    public void onEventMainThread(DLProgressEvent event) {
+        if (event.getB().getName().equals(b.getName())) {
             displayProgress((int) event.toCircular());
         }
     }
@@ -72,7 +74,7 @@ public class BookItemHolder {
     private void displayProgress(int progress) {
 
 
-        if (progress == DownloadProgressEvent.PROGRESS_BEGINNING) {
+        if (progress == DLProgressEvent.PROGRESS_BEGINNING) {
             // Download starting
             RelativeLayout.LayoutParams acronymParams =
                     (RelativeLayout.LayoutParams)acronym.getLayoutParams();
@@ -99,6 +101,7 @@ public class BookItemHolder {
             isDownloaded.setVisibility(View.GONE);
             downloadProgress.setVisibility(View.VISIBLE);
 
+            downloadProgress.stopSpinning();
             downloadProgress.setProgress(progress);
         } else {
             // Download complete

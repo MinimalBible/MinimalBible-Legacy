@@ -29,21 +29,24 @@ public class BookDownloadManager implements WorkListener{
      */
     private Map<String, Book> bookMappings;
 
+    /**
+     * Cached copy of downloads in progress so views displaying this info can get it quickly.
+     */
+    private Map<Book, DLProgressEvent> inProgressDownloads;
+
     @Inject
     Provider<BookDownloadThread> dlThreadProvider;
 
-    /* Going to fix this in the next commit, right now it's circular
-    @Inject
-    */
-    DownloadManager downloadManager;
+    @Inject DownloadManager downloadManager;
 
     public BookDownloadManager() {
         bookMappings = new HashMap<String, Book>();
+        inProgressDownloads = new HashMap<Book, DLProgressEvent>();
         JobManager.addWorkListener(this);
         MinimalBible.getApplication().inject(this);
     }
 
-    public void downloadBook(Book b) {
+    public void installBook(Book b) {
         BookDownloadThread dlThread = dlThreadProvider.get();
         dlThread.downloadBook(b);
         addJob(BookDownloadThread.getJobId(b), b);
@@ -55,12 +58,35 @@ public class BookDownloadManager implements WorkListener{
 
     @Override
     public void workProgressed(WorkEvent ev) {
-        Log.d("BookDownloadManager", ev.toString());
         Progress job = ev.getJob();
+        EventBus downloadBus = downloadManager.getDownloadBus();
         if (bookMappings.containsKey(job.getJobID())) {
-            downloadManager.getRefreshBus()
-                    .post(new DownloadProgressEvent(job.getTotalWork(), job.getWorkDone(),
-                            bookMappings.get(job.getJobID())));
+            Book b = bookMappings.get(job.getJobID());
+
+            if (job.getWorkDone() == job.getTotalWork()) {
+                // Download is complete
+                inProgressDownloads.remove(bookMappings.get(job.getJobID()));
+                downloadBus.post(new DLProgressEvent(DLProgressEvent.PROGRESS_COMPLETE, b));
+            } else {
+                // Track the ongoing download
+                DLProgressEvent event = new DLProgressEvent(job.getWorkDone(),
+                        job.getTotalWork(), b);
+                inProgressDownloads.put(b, event);
+                downloadBus.post(event);
+            }
+        }
+    }
+
+    /**
+     * Check the status of a book download in progress.
+     * @param b
+     * @return The most recent DownloadProgressEvent for the book, or null if not downloading
+     */
+    public DLProgressEvent getInProgressDownloadProgress(Book b) {
+        if (inProgressDownloads.containsKey(b)) {
+            return inProgressDownloads.get(b);
+        } else {
+            return null;
         }
     }
 
@@ -68,5 +94,4 @@ public class BookDownloadManager implements WorkListener{
     public void workStateChanged(WorkEvent ev) {
         Log.d("BookDownloadManager", ev.toString());
     }
-
 }

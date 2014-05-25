@@ -17,6 +17,7 @@ import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseFragment;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.EventBookList;
+import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
 import org.crosswire.jsword.book.BookComparators;
@@ -48,6 +49,7 @@ public class BookListFragment extends BaseFragment {
     ListView downloadsAvailable;
 
     @Inject DownloadManager downloadManager;
+    @Inject RefreshManager refreshManager;
 
     @Inject DownloadPrefs downloadPrefs;
 
@@ -116,10 +118,10 @@ public class BookListFragment extends BaseFragment {
      */
 	private void refreshModules() {
         // Check if the downloadManager has already refreshed everything
-		List<Book> bookList = downloadManager.getBookList();
+		List<Book> bookList = refreshManager.getBookList();
 		if (bookList == null) {
             // downloadManager is in progress of refreshing
-            downloadManager.getRefreshBus().register(this);
+            downloadManager.getDownloadBus().register(this);
             refreshDialog = new ProgressDialog(getActivity());
             refreshDialog.setMessage("Refreshing available modules...");
             refreshDialog.setCancelable(false);

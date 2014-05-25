@@ -5,7 +5,10 @@ import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadManage
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadThread;
 import org.bspeice.minimalbible.activities.downloader.manager.BookRefreshTask;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
+import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
 import org.crosswire.common.progress.JobManager;
+
+import java.sql.Ref;
 
 import javax.inject.Singleton;
 
@@ -24,21 +27,11 @@ import de.greenrobot.event.EventBus;
             BookRefreshTask.class,
             BookItemHolder.class,
             BookDownloadManager.class,
-            BookDownloadThread.class
+            BookDownloadThread.class,
+            RefreshManager.class
         }
 )
 public class ActivityDownloaderModule {
-
-    /**
-     * Provide a Singleton DownloadManager for injection
-     * Note that we need to annotate Singleton here, only annotating on the
-     * DownloadManager itself is not enough.
-     * @return Global DownloadManager instance
-     */
-    @Provides @Singleton
-    DownloadManager provideDownloadManager() {
-        return new DownloadManager();
-    }
 
     @Provides
     EventBus provideBus() {

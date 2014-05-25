@@ -5,19 +5,23 @@ import org.crosswire.jsword.book.Book;
 /**
  * Used for notifying that a book's download progress is ongoing
  */
-public class DownloadProgressEvent {
+public class DLProgressEvent {
     private int progress;
     private Book b;
 
     public static final int PROGRESS_COMPLETE = 100;
     public static final int PROGRESS_BEGINNING = 0;
 
-    public DownloadProgressEvent(int workDone, int totalWork, Book b) {
-        this.progress = workDone / totalWork;
+    public DLProgressEvent(int workDone, int totalWork, Book b) {
+        if (totalWork == 0) {
+            this.progress = 0;
+        } else {
+            this.progress = (int)((float) workDone / totalWork * 100);
+        }
         this.b = b;
     }
 
-    public DownloadProgressEvent(int workDone, Book b) {
+    public DLProgressEvent(int workDone, Book b) {
         this.progress = workDone;
         this.b = b;
     }
