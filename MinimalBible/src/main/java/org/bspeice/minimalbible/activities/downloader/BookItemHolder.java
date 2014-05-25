@@ -1,6 +1,5 @@
 package org.bspeice.minimalbible.activities.downloader;
 
-import android.annotation.SuppressLint;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;

@@ -15,7 +15,7 @@ import javax.inject.Singleton;
 import de.greenrobot.event.EventBus;
 
 /**
- * Created by bspeice on 5/24/14.
+ * Handle refreshing the list of books available as needed
  */
 @Singleton
 public class RefreshManager {

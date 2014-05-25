@@ -86,7 +86,7 @@ public class BookDownloadManager implements WorkListener, BooksListener {
 
     /**
      * Check the status of a book download in progress.
-     * @param b
+     * @param b The book to get the current progress of
      * @return The most recent DownloadProgressEvent for the book, or null if not downloading
      */
     public DLProgressEvent getInProgressDownloadProgress(Book b) {

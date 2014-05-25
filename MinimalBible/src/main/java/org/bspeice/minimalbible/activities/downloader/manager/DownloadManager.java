@@ -3,18 +3,12 @@ package org.bspeice.minimalbible.activities.downloader.manager;
 import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
-import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
-import org.crosswire.jsword.book.BookList;
-import org.crosswire.jsword.book.Books;
-import org.crosswire.jsword.book.BooksEvent;
-import org.crosswire.jsword.book.BooksListener;
 import org.crosswire.jsword.book.install.InstallManager;
 import org.crosswire.jsword.book.install.Installer;
 import org.crosswire.jsword.book.sword.SwordBookPath;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;

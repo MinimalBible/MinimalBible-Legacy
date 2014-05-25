@@ -3,7 +3,6 @@ package org.bspeice.minimalbible.activities.downloader.manager;
 import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
-import org.crosswire.common.progress.JobManager;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.install.InstallException;
 import org.crosswire.jsword.book.install.Installer;
@@ -11,8 +10,9 @@ import org.crosswire.jsword.book.install.Installer;
 import javax.inject.Inject;
 
 /**
- * Created by bspeice on 5/12/14.
+ * Thread that handles downloading a book
  */
+//TODO: Refactor to BookDownloadManager, downloadBook() creates its own thread
 public class BookDownloadThread {
 
     private final String TAG = "BookDownloadThread";
@@ -51,8 +51,8 @@ public class BookDownloadThread {
      * Build what the installer creates the job name as.
      * Likely prone to be brittle.
      * TODO: Make sure to test that this is an accurate job name
-     * @param b
-     * @return
+     * @param b The book to predict the download job name of
+     * @return The name of the job that will/is download/ing this book
      */
     public static String getJobId(Book b) {
         return "INSTALL_BOOK-" + b.getInitials();

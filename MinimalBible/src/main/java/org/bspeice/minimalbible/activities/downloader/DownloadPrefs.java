@@ -3,7 +3,7 @@ package org.bspeice.minimalbible.activities.downloader;
 import de.devland.esperandro.annotations.SharedPreferences;
 
 /**
- * Created by bspeice on 5/19/14.
+ * SharedPreferences interface to be built by Esperandro
  */
 @SharedPreferences(name="DownloadPrefs")
 public interface DownloadPrefs {

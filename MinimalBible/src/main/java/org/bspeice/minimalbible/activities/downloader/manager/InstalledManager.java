@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Created by bspeice on 5/25/14.
+ * Manager to keep track of which books have been installed
  */
 @Singleton
 public class InstalledManager implements BooksListener {

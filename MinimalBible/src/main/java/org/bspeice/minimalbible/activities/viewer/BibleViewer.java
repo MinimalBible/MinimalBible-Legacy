@@ -1,23 +1,12 @@
 package org.bspeice.minimalbible.activities.viewer;
 
-import org.bspeice.minimalbible.R;
-import org.bspeice.minimalbible.R.id;
-import org.bspeice.minimalbible.R.layout;
-import org.bspeice.minimalbible.R.menu;
-import org.bspeice.minimalbible.R.string;
-import org.bspeice.minimalbible.activities.BaseActivity;
-import org.bspeice.minimalbible.activities.BaseNavigationDrawerFragment;
-import org.bspeice.minimalbible.activities.downloader.DownloadActivity;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.readystatesoftware.systembartint.SystemBarTintManager;
+import org.bspeice.minimalbible.R;
+import org.bspeice.minimalbible.activities.BaseActivity;
+import org.bspeice.minimalbible.activities.BaseNavigationDrawerFragment;
+import org.bspeice.minimalbible.activities.downloader.DownloadActivity;
 
 public class BibleViewer extends BaseActivity implements
 		BaseNavigationDrawerFragment.NavigationDrawerCallbacks {

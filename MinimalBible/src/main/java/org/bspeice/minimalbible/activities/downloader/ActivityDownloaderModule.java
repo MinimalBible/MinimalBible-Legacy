@@ -7,11 +7,6 @@ import org.bspeice.minimalbible.activities.downloader.manager.BookRefreshTask;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.InstalledManager;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
-import org.crosswire.common.progress.JobManager;
-
-import java.sql.Ref;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
