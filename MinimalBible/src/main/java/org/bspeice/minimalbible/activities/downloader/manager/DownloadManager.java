@@ -3,11 +3,14 @@ package org.bspeice.minimalbible.activities.downloader.manager;
 import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
+import org.crosswire.common.util.CWProject;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
 import org.crosswire.jsword.book.install.InstallManager;
 import org.crosswire.jsword.book.install.Installer;
+import org.crosswire.jsword.book.sword.SwordBookPath;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +21,7 @@ import javax.inject.Singleton;
 
 import de.greenrobot.event.EventBus;
 
+// TODO: Rename to RefreshManager? Refactor to RefreshManager?
 @Singleton
 public class DownloadManager {
 
@@ -26,7 +30,7 @@ public class DownloadManager {
     /**
      * Cached copy of modules that are available so we don't refresh for everyone who requests it.
      */
-    private List<Book> availableModules;
+    private Map<Installer, List<Book>> availableModules;
 
     /**
      * Cached copy of downloads in progress so views displaying this info can get it quickly.
@@ -34,7 +38,9 @@ public class DownloadManager {
     private Map<Book, DownloadProgressEvent> inProgressDownloads;
 
     @Inject
-    protected EventBus downloadBus;
+    protected EventBus refreshBus;
+
+    @Inject BookDownloadManager bookDownloadManager;
 
 	public static final BookCategory[] VALID_CATEGORIES = { BookCategory.BIBLE,
 			BookCategory.COMMENTARY, BookCategory.DICTIONARY,
@@ -46,7 +52,10 @@ public class DownloadManager {
 	public DownloadManager() {
         MinimalBible.getApplication().inject(this);
 		setDownloadDir();
+
+        availableModules = new HashMap<Installer, List<Book>>();
 		refreshModules();
+
         inProgressDownloads = new HashMap<Book, DownloadProgressEvent>();
 	}
 
@@ -78,6 +87,9 @@ public class DownloadManager {
 		String home = MinimalBible.getAppContext().getFilesDir().toString();
 		Log.d(TAG, "Setting jsword.home to: " + home);
 		System.setProperty("jsword.home", home);
+        System.setProperty("sword.home", home);
+        SwordBookPath.setDownloadDir(new File(home));
+        Log.d(TAG, "Sword download path: " + SwordBookPath.getSwordDownloadDir());
 	}
 
     /**
@@ -85,8 +97,8 @@ public class DownloadManager {
      * when it's done.
      */
 	private void refreshModules() {
-        downloadBus.register(this);
-		new BookRefreshTask(downloadBus).execute(getInstallersArray());
+        refreshBus.register(this);
+		new BookRefreshTask(refreshBus).execute(getInstallersArray());
 	}
 
     /**
@@ -95,7 +107,7 @@ public class DownloadManager {
      */
     @SuppressWarnings("unused")
     public void onEvent(EventBookList event) {
-        this.availableModules = event.getBookList();
+        this.availableModules = event.getInstallerMapping();
     }
 
     /**
@@ -103,7 +115,15 @@ public class DownloadManager {
      * @return The cached book list, or null
      */
     public List<Book> getBookList() {
-        return availableModules;
+        if (availableModules.values().size() == 0) {
+            return null;
+        } else {
+            List<Book> bookList = new ArrayList<Book>();
+            for (List<Book> l : availableModules.values()) {
+                bookList.addAll(l);
+            }
+            return bookList;
+        }
     }
 
     /**
@@ -112,9 +132,11 @@ public class DownloadManager {
      * been completed, make sure to check {@link #getBookList()} first.
      * @return The EventBus the DownloadManager is using
      */
-	public EventBus getDownloadBus() {
-		return this.downloadBus;
+	public EventBus getRefreshBus() {
+		return this.refreshBus;
 	}
+
+    // TODO: All code below should be migrated to BookDownloadManager
 
     /**
      * Handle a book download progress event.
@@ -140,6 +162,24 @@ public class DownloadManager {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Find the installer that a Book comes from.
+     * @param b The book to search for
+     * @return The Installer that should be used for this book.
+     */
+    public Installer installerFromBook(Book b) {
+        for (Map.Entry<Installer, List<Book>> entry : availableModules.entrySet()) {
+            if (entry.getValue().contains(b)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    public void installBook(Book b) {
+        bookDownloadManager.downloadBook(b);
     }
 
 }

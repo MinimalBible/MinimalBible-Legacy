@@ -119,7 +119,7 @@ public class BookListFragment extends BaseFragment {
 		List<Book> bookList = downloadManager.getBookList();
 		if (bookList == null) {
             // downloadManager is in progress of refreshing
-            downloadManager.getDownloadBus().register(this);
+            downloadManager.getRefreshBus().register(this);
             refreshDialog = new ProgressDialog(getActivity());
             refreshDialog.setMessage("Refreshing available modules...");
             refreshDialog.setCancelable(false);

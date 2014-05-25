@@ -1,8 +1,11 @@
 package org.bspeice.minimalbible.activities.downloader;
 
 import org.bspeice.minimalbible.MinimalBible;
+import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadManager;
+import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadThread;
 import org.bspeice.minimalbible.activities.downloader.manager.BookRefreshTask;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
+import org.crosswire.common.progress.JobManager;
 
 import javax.inject.Singleton;
 
@@ -19,7 +22,9 @@ import de.greenrobot.event.EventBus;
             BookListFragment.class,
             DownloadManager.class,
             BookRefreshTask.class,
-            BookItemHolder.class
+            BookItemHolder.class,
+            BookDownloadManager.class,
+            BookDownloadThread.class
         }
 )
 public class ActivityDownloaderModule {
@@ -39,7 +44,6 @@ public class ActivityDownloaderModule {
     EventBus provideBus() {
         return new EventBus();
     }
-
 
     @Provides //@Singleton
     DownloadPrefs provideDownloadPrefs() {

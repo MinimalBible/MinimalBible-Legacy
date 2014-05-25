@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
 
 /**
 * Created by bspeice on 5/20/14.
@@ -54,16 +55,12 @@ public class BookItemHolder {
 
     @OnClick(R.id.download_ibtn_download)
     public void onDownloadItem(View v) {
-        downloadManager.getDownloadBus().register(this);
-        downloadManager.getDownloadBus()
-                .post(new DownloadProgressEvent(DownloadProgressEvent.PROGRESS_BEGINNING, b));
-
-        // TODO: Kick off a service to actually do the downloading, rather than simulate
-        downloadManager.getDownloadBus().post(new DownloadProgressEvent(47, b));
+        downloadManager.getRefreshBus().register(this);
+        downloadManager.installBook(this.b);
     }
 
     public void onEventMainThread(DownloadProgressEvent event) {
-        if (event.getB().equals(this.b)) {
+        if (event.getB().equals(b)) {
             displayProgress((int) event.toCircular());
         }
     }

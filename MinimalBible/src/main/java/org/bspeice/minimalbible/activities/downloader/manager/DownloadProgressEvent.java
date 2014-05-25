@@ -12,17 +12,18 @@ public class DownloadProgressEvent {
     public static final int PROGRESS_COMPLETE = 100;
     public static final int PROGRESS_BEGINNING = 0;
 
-    public DownloadProgressEvent(int progress, Book b) {
-        this.progress = progress;
+    public DownloadProgressEvent(int workDone, int totalWork, Book b) {
+        this.progress = workDone / totalWork;
+        this.b = b;
+    }
+
+    public DownloadProgressEvent(int workDone, Book b) {
+        this.progress = workDone;
         this.b = b;
     }
 
     public int getProgress() {
         return progress;
-    }
-
-    public Book getB() {
-        return b;
     }
 
     public float toCircular() {
@@ -31,5 +32,9 @@ public class DownloadProgressEvent {
 
     public boolean isComplete() {
         return progress >= 100;
+    }
+
+    public Book getB() {
+        return this.b;
     }
 }

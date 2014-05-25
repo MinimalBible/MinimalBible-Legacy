@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
@@ -12,8 +13,11 @@ import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.install.InstallException;
 import org.crosswire.jsword.book.install.Installer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -37,7 +41,7 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 
 	@Override
 	protected List<Book> doInBackground(Installer... params) {
-		List<Book> books = new LinkedList<Book>();
+        Map<Installer, List<Book>> bookList = new HashMap<Installer, List<Book>>();
 
 		int index = 0;
 		for (Installer i : params) {
@@ -51,13 +55,14 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 									+ i.toString(), e);
 				}
 			}
-
-			books.addAll(i.getBooks());
+            bookList.put(i, i.getBooks());
 			publishProgress(++index, params.length);
 		}
 
-		downloadBus.postSticky(new EventBookList(books));
-		return books;
+        EventBookList event = new EventBookList(bookList);
+        downloadBus.post(event);
+
+        return event.getBookList();
 	}
 
 	private boolean doRefresh() {
