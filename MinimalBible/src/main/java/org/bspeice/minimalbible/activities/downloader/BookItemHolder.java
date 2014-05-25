@@ -13,6 +13,7 @@ import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.DLProgressEvent;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
+import org.bspeice.minimalbible.activities.downloader.manager.InstalledManager;
 import org.crosswire.jsword.book.Book;
 
 import javax.inject.Inject;
@@ -36,6 +37,7 @@ public class BookItemHolder {
 
     @Inject DownloadManager downloadManager;
     @Inject BookDownloadManager bookDownloadManager;
+    @Inject InstalledManager installedManager;
 
     Book b;
 
@@ -51,14 +53,13 @@ public class BookItemHolder {
         DLProgressEvent dlProgressEvent = bookDownloadManager.getInProgressDownloadProgress(b);
         if (dlProgressEvent != null) {
             displayProgress((int) dlProgressEvent.toCircular());
-        } else if (downloadManager.isInstalled(b)) {
+        } else if (installedManager.isInstalled(b)) {
             displayInstalled();
         }
         downloadManager.getDownloadBus().register(this);
     }
 
     private void displayInstalled() {
-        isDownloaded.setImageResource(android.R.color.transparent);
         isDownloaded.setImageResource(R.drawable.ic_action_cancel);
     }
 
@@ -67,7 +68,6 @@ public class BookItemHolder {
         bookDownloadManager.installBook(this.b);
     }
 
-    @SuppressLint("")
     public void onEventMainThread(DLProgressEvent event) {
         if (event.getB().getOsisID().equals(b.getOsisID())) {
             displayProgress((int) event.toCircular());

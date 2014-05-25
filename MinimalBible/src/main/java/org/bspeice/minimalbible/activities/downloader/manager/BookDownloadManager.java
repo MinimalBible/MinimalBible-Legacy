@@ -8,6 +8,9 @@ import org.crosswire.common.progress.Progress;
 import org.crosswire.common.progress.WorkEvent;
 import org.crosswire.common.progress.WorkListener;
 import org.crosswire.jsword.book.Book;
+import org.crosswire.jsword.book.Books;
+import org.crosswire.jsword.book.BooksEvent;
+import org.crosswire.jsword.book.BooksListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,9 +24,10 @@ import de.greenrobot.event.EventBus;
 /**
  * Wrapper to convert JSword progress events to MinimalBible EventBus-based
  */
-//TODO: Listen for installed downloads in case the download took very little time?
+//TODO: Make sure that jobs have the correct name
+//TODO: Install indexes for Bibles
 @Singleton
-public class BookDownloadManager implements WorkListener{
+public class BookDownloadManager implements WorkListener, BooksListener {
 
     /**
      * Mapping of Job ID to the EventBus we should trigger progress on
@@ -45,6 +49,7 @@ public class BookDownloadManager implements WorkListener{
         inProgressDownloads = new HashMap<Book, DLProgressEvent>();
         JobManager.addWorkListener(this);
         MinimalBible.getApplication().inject(this);
+        Books.installed().addBooksListener(this);
     }
 
     public void installBook(Book b) {
@@ -60,6 +65,7 @@ public class BookDownloadManager implements WorkListener{
     @Override
     public void workProgressed(WorkEvent ev) {
         Progress job = ev.getJob();
+        Log.d("BookDownloadManager", "Download in progress: " + job.getJobID() + " - " + job.getJobName() + " " + job.getWorkDone() + "/" + job.getTotalWork());
         EventBus downloadBus = downloadManager.getDownloadBus();
         if (bookMappings.containsKey(job.getJobID())) {
             Book b = bookMappings.get(job.getJobID());
@@ -94,5 +100,26 @@ public class BookDownloadManager implements WorkListener{
     @Override
     public void workStateChanged(WorkEvent ev) {
         Log.d("BookDownloadManager", ev.toString());
+    }
+
+    @Override
+    public void bookAdded(BooksEvent booksEvent) {
+        // It's possible the install finished before we received a progress event for it,
+        // we handle that case here.
+        Book b = booksEvent.getBook();
+        Log.d("BookDownloadManager", "Book added: " + b.getName());
+        if (inProgressDownloads.containsKey(b)) {
+            inProgressDownloads.remove(b);
+        }
+        // Not sure why, but the inProgressDownloads might not have our book,
+        // so we always trigger the PROGRESS_COMPLETE event.
+        // TODO: Make sure all books get to the inProgressDownloads
+        downloadManager.getDownloadBus()
+                .post(new DLProgressEvent(DLProgressEvent.PROGRESS_COMPLETE, b));
+    }
+
+    @Override
+    public void bookRemoved(BooksEvent booksEvent) {
+        // Not too worried about this just yet.
     }
 }

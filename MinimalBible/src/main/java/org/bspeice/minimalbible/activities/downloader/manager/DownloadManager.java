@@ -5,7 +5,10 @@ import android.util.Log;
 import org.bspeice.minimalbible.MinimalBible;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
+import org.crosswire.jsword.book.BookList;
 import org.crosswire.jsword.book.Books;
+import org.crosswire.jsword.book.BooksEvent;
+import org.crosswire.jsword.book.BooksListener;
 import org.crosswire.jsword.book.install.InstallManager;
 import org.crosswire.jsword.book.install.Installer;
 import org.crosswire.jsword.book.sword.SwordBookPath;
@@ -28,7 +31,7 @@ public class DownloadManager {
     @Inject
     protected EventBus downloadBus;
 
-    private List<Book> installedBooks;
+
 
 	public static final BookCategory[] VALID_CATEGORIES = { BookCategory.BIBLE,
 			BookCategory.COMMENTARY, BookCategory.DICTIONARY,
@@ -83,10 +86,5 @@ public class DownloadManager {
 		return this.downloadBus;
 	}
 
-    public boolean isInstalled(Book b) {
-        if (installedBooks == null) {
-            installedBooks = Books.installed().getBooks();
-        }
-        return installedBooks.contains(b);
-    }
+
 }

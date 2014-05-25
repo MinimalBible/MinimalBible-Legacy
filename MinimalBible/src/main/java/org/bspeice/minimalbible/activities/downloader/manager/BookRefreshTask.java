@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
@@ -13,15 +12,11 @@ import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.install.InstallException;
 import org.crosswire.jsword.book.install.Installer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-
-import de.greenrobot.event.EventBus;
 
 public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 	private static final String TAG = "EventBookRefreshTask";
@@ -29,10 +24,10 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
     // If last refresh was before the below, force an internet refresh
     private final Long refreshAfter = System.currentTimeMillis() - 604800000L; // 1 Week in millis
 
-    @Inject
-    DownloadPrefs downloadPrefs;
+    @Inject DownloadPrefs downloadPrefs;
 
     @Inject DownloadManager downloadManager;
+    @Inject InstalledManager installedManager;
 
 	public BookRefreshTask() {
         MinimalBible.getApplication().inject(this);
@@ -57,9 +52,9 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
             bookList.put(i, i.getBooks());
 			publishProgress(++index, params.length);
 		}
+        //TODO: Filter duplicates
 
-        // Pre-cache the DownloadManager with the list of installed books
-        downloadManager.isInstalled(bookList.values().iterator().next().get(0));
+        installedManager.initialize();
         EventBookList event = new EventBookList(bookList);
         downloadManager.getDownloadBus().post(event);
 

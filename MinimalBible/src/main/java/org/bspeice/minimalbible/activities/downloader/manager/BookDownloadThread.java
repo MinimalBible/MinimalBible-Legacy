@@ -55,6 +55,6 @@ public class BookDownloadThread {
      * @return
      */
     public static String getJobId(Book b) {
-        return "INSTALL_BOOK-" + b.getInitials().toUpperCase();
+        return "INSTALL_BOOK-" + b.getInitials();
     }
 }

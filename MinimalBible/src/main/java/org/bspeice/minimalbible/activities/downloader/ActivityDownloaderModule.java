@@ -5,6 +5,7 @@ import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadManage
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadThread;
 import org.bspeice.minimalbible.activities.downloader.manager.BookRefreshTask;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
+import org.bspeice.minimalbible.activities.downloader.manager.InstalledManager;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
 import org.crosswire.common.progress.JobManager;
 
@@ -28,7 +29,8 @@ import de.greenrobot.event.EventBus;
             BookItemHolder.class,
             BookDownloadManager.class,
             BookDownloadThread.class,
-            RefreshManager.class
+            RefreshManager.class,
+            InstalledManager.class
         }
 )
 public class ActivityDownloaderModule {
