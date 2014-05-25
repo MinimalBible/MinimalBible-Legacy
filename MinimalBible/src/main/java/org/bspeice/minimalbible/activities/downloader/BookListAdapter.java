@@ -45,7 +45,7 @@ public class BookListAdapter extends BaseAdapter implements AbsListView.Recycler
         // Nasty Android issue - if you don't check the getTag(), Android will start recycling,
         // and you'll get some really strange issues
         if (convertView == null || convertView.getTag() == null) {
-            convertView = inflater.inflate(R.layout.list_download_items, null);
+            convertView = inflater.inflate(R.layout.list_download_items, parent, false);
             viewHolder = new BookItemHolder(convertView, getItem(position));
         } else {
             viewHolder = (BookItemHolder) convertView.getTag();

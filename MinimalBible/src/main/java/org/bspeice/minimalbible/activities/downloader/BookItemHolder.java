@@ -1,6 +1,6 @@
 package org.bspeice.minimalbible.activities.downloader;
 
-import android.util.Log;
+import android.annotation.SuppressLint;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -51,9 +51,15 @@ public class BookItemHolder {
         DLProgressEvent dlProgressEvent = bookDownloadManager.getInProgressDownloadProgress(b);
         if (dlProgressEvent != null) {
             displayProgress((int) dlProgressEvent.toCircular());
+        } else if (downloadManager.isInstalled(b)) {
+            displayInstalled();
         }
         downloadManager.getDownloadBus().register(this);
-        // TODO: Display a remove icon if the book has been downloaded.
+    }
+
+    private void displayInstalled() {
+        isDownloaded.setImageResource(android.R.color.transparent);
+        isDownloaded.setImageResource(R.drawable.ic_action_cancel);
     }
 
     @OnClick(R.id.download_ibtn_download)
@@ -61,8 +67,9 @@ public class BookItemHolder {
         bookDownloadManager.installBook(this.b);
     }
 
+    @SuppressLint("")
     public void onEventMainThread(DLProgressEvent event) {
-        if (event.getB().getName().equals(b.getName())) {
+        if (event.getB().getOsisID().equals(b.getOsisID())) {
             displayProgress((int) event.toCircular());
         }
     }
@@ -115,6 +122,7 @@ public class BookItemHolder {
 
             isDownloaded.setVisibility(View.VISIBLE);
             downloadProgress.setVisibility(View.GONE);
+            displayInstalled();
         }
     }
 

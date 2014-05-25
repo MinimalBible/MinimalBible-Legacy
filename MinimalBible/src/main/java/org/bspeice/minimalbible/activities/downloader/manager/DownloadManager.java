@@ -3,12 +3,15 @@ package org.bspeice.minimalbible.activities.downloader.manager;
 import android.util.Log;
 
 import org.bspeice.minimalbible.MinimalBible;
+import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
+import org.crosswire.jsword.book.Books;
 import org.crosswire.jsword.book.install.InstallManager;
 import org.crosswire.jsword.book.install.Installer;
 import org.crosswire.jsword.book.sword.SwordBookPath;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -16,7 +19,7 @@ import javax.inject.Singleton;
 
 import de.greenrobot.event.EventBus;
 
-// TODO: Rename to RefreshManager? Refactor to RefreshManager?
+// TODO: Listen to BookInstall events?
 @Singleton
 public class DownloadManager {
 
@@ -24,6 +27,8 @@ public class DownloadManager {
 
     @Inject
     protected EventBus downloadBus;
+
+    private List<Book> installedBooks;
 
 	public static final BookCategory[] VALID_CATEGORIES = { BookCategory.BIBLE,
 			BookCategory.COMMENTARY, BookCategory.DICTIONARY,
@@ -77,4 +82,11 @@ public class DownloadManager {
 	public EventBus getDownloadBus() {
 		return this.downloadBus;
 	}
+
+    public boolean isInstalled(Book b) {
+        if (installedBooks == null) {
+            installedBooks = Books.installed().getBooks();
+        }
+        return installedBooks.contains(b);
+    }
 }

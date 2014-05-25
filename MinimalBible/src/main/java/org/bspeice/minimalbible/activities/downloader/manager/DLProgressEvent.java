@@ -34,10 +34,6 @@ public class DLProgressEvent {
         return ((float)progress) * 360 / 100;
     }
 
-    public boolean isComplete() {
-        return progress >= 100;
-    }
-
     public Book getB() {
         return this.b;
     }

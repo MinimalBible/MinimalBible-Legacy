@@ -21,6 +21,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Wrapper to convert JSword progress events to MinimalBible EventBus-based
  */
+//TODO: Listen for installed downloads in case the download took very little time?
 @Singleton
 public class BookDownloadManager implements WorkListener{
 

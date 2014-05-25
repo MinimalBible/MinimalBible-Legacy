@@ -32,10 +32,9 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
     @Inject
     DownloadPrefs downloadPrefs;
 
-	private EventBus downloadBus;
+    @Inject DownloadManager downloadManager;
 
-	public BookRefreshTask(EventBus downloadBus) {
-		this.downloadBus = downloadBus;
+	public BookRefreshTask() {
         MinimalBible.getApplication().inject(this);
 	}
 
@@ -59,8 +58,10 @@ public class BookRefreshTask extends AsyncTask<Installer, Integer, List<Book>> {
 			publishProgress(++index, params.length);
 		}
 
+        // Pre-cache the DownloadManager with the list of installed books
+        downloadManager.isInstalled(bookList.values().iterator().next().get(0));
         EventBookList event = new EventBookList(bookList);
-        downloadBus.post(event);
+        downloadManager.getDownloadBus().post(event);
 
         return event.getBookList();
 	}

@@ -40,7 +40,7 @@ public class RefreshManager {
     private void refreshModules() {
         EventBus refreshBus = downloadManager.getDownloadBus();
         refreshBus.register(this);
-        new BookRefreshTask(refreshBus).execute(downloadManager.getInstallersArray());
+        new BookRefreshTask().execute(downloadManager.getInstallersArray());
     }
 
     /**
