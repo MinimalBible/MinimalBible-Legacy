@@ -9,8 +9,8 @@ import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.MinimalBibleModules;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.downloader.BookItemHolder;
+import org.bspeice.minimalbible.activities.downloader.manager.DLProgressEvent;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
-import org.bspeice.minimalbible.activities.downloader.manager.DownloadProgressEvent;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.install.Installer;
 
@@ -54,7 +54,7 @@ public class DownloadActivityTest extends InstrumentationTestCase {
         BookItemHolder holder = new BookItemHolder(dummyView, testBook);
 
         dm.getDownloadBus().register(new Object() {
-            public void onEvent(DownloadProgressEvent event) {
+            public void onEvent(DLProgressEvent event) {
                 Log.d("testInitial", Integer.toString(event.getProgress()));
                 if (event.getProgress() == 0) {
                     signal.countDown();

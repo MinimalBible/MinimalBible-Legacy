@@ -3,6 +3,7 @@ package org.bspeice.minimalbible.activities.downloader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
 import org.bspeice.minimalbible.R;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Adapter to inflate list_download_items.xml
  */
-public class BookListAdapter extends BaseAdapter {
+public class BookListAdapter extends BaseAdapter implements AbsListView.RecyclerListener {
     private List<Book> bookList;
 
     private LayoutInflater inflater;
@@ -53,4 +54,11 @@ public class BookListAdapter extends BaseAdapter {
         viewHolder.bindHolder();
         return convertView;
     }
+
+    @Override
+    public void onMovedToScrapHeap(View view) {
+        BookItemHolder holder = (BookItemHolder) view.getTag();
+        holder.onScrollOffscreen();
+    }
+
 }

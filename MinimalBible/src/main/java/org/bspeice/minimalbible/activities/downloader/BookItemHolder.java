@@ -52,12 +52,12 @@ public class BookItemHolder {
         if (dlProgressEvent != null) {
             displayProgress((int) dlProgressEvent.toCircular());
         }
+        downloadManager.getDownloadBus().register(this);
         // TODO: Display a remove icon if the book has been downloaded.
     }
 
     @OnClick(R.id.download_ibtn_download)
     public void onDownloadItem(View v) {
-        downloadManager.getDownloadBus().register(this);
         bookDownloadManager.installBook(this.b);
     }
 
@@ -116,5 +116,9 @@ public class BookItemHolder {
             isDownloaded.setVisibility(View.VISIBLE);
             downloadProgress.setVisibility(View.GONE);
         }
+    }
+
+    public void onScrollOffscreen() {
+        downloadManager.getDownloadBus().unregister(this);
     }
 }
