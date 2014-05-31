@@ -53,7 +53,7 @@ public class DownloadActivityTest extends InstrumentationTestCase {
         // Need to make sure we've refreshed the refreshmanager first
         Installer i = (Installer) dm.getInstallers().values().toArray()[0];
         final Book testBook = i.getBooks().get(0);
-        await().until(new Callable<Boolean>() {
+        await().atMost(30, TimeUnit.SECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 return rm.installerFromBook(testBook) != null;
