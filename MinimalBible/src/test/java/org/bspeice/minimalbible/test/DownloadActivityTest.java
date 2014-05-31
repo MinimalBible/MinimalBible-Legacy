@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import dagger.Module;
+import dagger.ObjectGraph;
 
 import static com.jayway.awaitility.Awaitility.*;
 
@@ -36,8 +37,9 @@ public class DownloadActivityTest extends InstrumentationTestCase {
     @Inject RefreshManager rm;
 
     public void setUp() {
-        MinimalBible.getApplication().getObjGraph()
-                .plus(DownloadActivityTestModule.class).inject(this);
+        MinimalBible application = MinimalBible.getApplication();
+        ObjectGraph graph = application.getObjGraph();
+        graph.plus(DownloadActivityTestModule.class).inject(this);
     }
 
     public void testBasicAssertion() {
