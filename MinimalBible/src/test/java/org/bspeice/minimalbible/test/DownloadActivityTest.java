@@ -7,9 +7,13 @@ import org.bspeice.minimalbible.MinimalBibleModules;
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadThread;
 import org.bspeice.minimalbible.activities.downloader.manager.DLProgressEvent;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
+import org.bspeice.minimalbible.activities.downloader.manager.InstalledManager;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
 import org.crosswire.jsword.book.Book;
+import org.crosswire.jsword.book.BookException;
+import org.crosswire.jsword.book.Books;
 import org.crosswire.jsword.book.install.Installer;
+import org.crosswire.jsword.passage.NoSuchKeyException;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -33,6 +37,7 @@ public class DownloadActivityTest extends InstrumentationTestCase {
     public static class DownloadActivityTestModule {}
 
     @Inject DownloadManager dm;
+    @Inject InstalledManager im;
     @Inject Provider<BookDownloadThread> bookDownloadThreadProvider;
     @Inject RefreshManager rm;
 
@@ -78,6 +83,36 @@ public class DownloadActivityTest extends InstrumentationTestCase {
         if (signal.getCount() != 0) {
             fail("Event did not trigger!");
         }
+    }
+
+    /**
+     * Test that we can successfully download and remove a book
+     */
+    public void testInstallAndRemoveBook() {
+        // Install a book
+        Installer i = (Installer) dm.getInstallers().values().toArray()[0];
+        final Book testBook = i.getBooks().get(0);
+        await().atMost(30, TimeUnit.SECONDS).until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return Books.installed().getBooks().contains(testBook);
+            }
+        });
+
+        // Validate that we can actually do something with the book
+        // TODO: Validate that the book exists on the filesystem too
+        try {
+            assertNotNull(testBook.getRawText(testBook.getKey("Gen 1:1")));
+        } catch (BookException e) {
+            fail(e.getMessage());
+        } catch (NoSuchKeyException e) {
+            fail(e.getMessage());
+        }
+
+        // Remove the book and make sure it's gone
+        // TODO: Validate that the book is off the filesystem
+        im.removeBook(testBook);
+        assertFalse(Books.installed().getBooks().contains(testBook));
     }
 
 }
