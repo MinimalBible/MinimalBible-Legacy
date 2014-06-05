@@ -44,7 +44,8 @@ public class DownloadActivityTest extends InstrumentationTestCase {
     public void setUp() {
         MinimalBible application = MinimalBible.getApplication();
         ObjectGraph graph = application.getObjGraph();
-        graph.plus(DownloadActivityTestModule.class).inject(this);
+        ObjectGraph plusGraph = graph.plus(DownloadActivityTestModule.class);
+        plusGraph.inject(this);
     }
 
     public void testBasicAssertion() {
