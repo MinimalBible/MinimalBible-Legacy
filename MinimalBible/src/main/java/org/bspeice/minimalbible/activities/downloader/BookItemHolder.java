@@ -14,6 +14,8 @@ import org.bspeice.minimalbible.activities.downloader.manager.DLProgressEvent;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.InstalledManager;
 import org.crosswire.jsword.book.Book;
+import org.crosswire.jsword.book.BookException;
+import org.crosswire.jsword.book.Books;
 
 import javax.inject.Inject;
 
@@ -64,7 +66,13 @@ public class BookItemHolder {
 
     @OnClick(R.id.download_ibtn_download)
     public void onDownloadItem(View v) {
-        bookDownloadManager.installBook(this.b);
+        if (installedManager.isInstalled(b)) {
+            // Remove the book
+            installedManager.removeBook(b);
+            isDownloaded.setImageResource(R.drawable.ic_action_download);
+        } else {
+            bookDownloadManager.installBook(this.b);
+        }
     }
 
     public void onEventMainThread(DLProgressEvent event) {
