@@ -49,8 +49,8 @@ public class MinimalBible extends Application {
      */
     @Override
     public void onCreate() {
-        graph = ObjectGraph.create(MinimalBibleModules.class);
-        graph.inject(this);
+        //TODO: Is this necessary?
+        inject(this);
     }
 
     /**
@@ -58,6 +58,9 @@ public class MinimalBible extends Application {
      * @param o The object to be injected
      */
     public void inject(Object o) {
+        if (graph == null) {
+            graph = ObjectGraph.create(MinimalBibleModules.class);
+        }
         graph.inject(o);
     }
 
