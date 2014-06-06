@@ -58,11 +58,13 @@ public class MinimalBible extends Application {
      * @param o The object to be injected
      */
     public void inject(Object o) {
+        getObjGraph().inject(o);
+    }
+
+    public ObjectGraph getObjGraph() {
         if (graph == null) {
             graph = ObjectGraph.create(MinimalBibleModules.class);
         }
-        graph.inject(o);
+        return graph;
     }
-
-    public ObjectGraph getObjGraph() { return graph; }
 }
