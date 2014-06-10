@@ -32,7 +32,8 @@ dependencies {
     // compile 'com.f2prateek.dart:dart:1.1.0'
 
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
-    compile 'de.greenrobot:eventbus:2.2.0'
+    // compile 'de.greenrobot:eventbus:2.2.0'
+    compile 'com.netflix.rxjava:rxjava-android:0.19.0'
 
     // Handled by appcompat
     // compile 'com.google.android:support-v4:r7'
