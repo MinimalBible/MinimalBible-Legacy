@@ -11,6 +11,7 @@ import org.crosswire.jsword.book.sword.SwordBookPath;
 import java.io.File;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 // TODO: Listen to BookInstall events?
@@ -26,6 +27,7 @@ public class DownloadManager {
     /**
      * Set up the DownloadManager, and notify jSword of where it should store files at
      */
+    @Inject
 	public DownloadManager() {
         MinimalBible.getApplication().inject(this);
 		setDownloadDir();

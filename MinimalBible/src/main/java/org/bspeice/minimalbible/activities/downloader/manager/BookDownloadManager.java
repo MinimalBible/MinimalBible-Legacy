@@ -12,7 +12,6 @@ import org.crosswire.jsword.book.Books;
 import org.crosswire.jsword.book.BooksEvent;
 import org.crosswire.jsword.book.BooksListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,10 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import rx.Observable;
 import rx.subjects.PublishSubject;
-import rx.subjects.ReplaySubject;
-import rx.subjects.Subject;
 
 /**
  * Wrapper to convert JSword progress events to MinimalBible EventBus-based

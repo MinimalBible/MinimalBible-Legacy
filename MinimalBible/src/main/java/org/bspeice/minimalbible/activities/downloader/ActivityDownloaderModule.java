@@ -3,7 +3,6 @@ package org.bspeice.minimalbible.activities.downloader;
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadThread;
-import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.InstalledManager;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
 
@@ -17,12 +16,10 @@ import de.devland.esperandro.Esperandro;
 @Module(
         injects = {
             BookListFragment.class,
-            DownloadManager.class,
             BookItemHolder.class,
             BookDownloadManager.class,
             BookDownloadThread.class,
-            RefreshManager.class,
-            InstalledManager.class
+            RefreshManager.class
         }
 )
 public class ActivityDownloaderModule {

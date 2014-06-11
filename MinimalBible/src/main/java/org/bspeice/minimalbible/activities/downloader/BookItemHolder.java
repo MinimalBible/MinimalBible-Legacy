@@ -11,11 +11,8 @@ import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.DLProgressEvent;
-import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.InstalledManager;
 import org.crosswire.jsword.book.Book;
-import org.crosswire.jsword.book.BookException;
-import org.crosswire.jsword.book.Books;
 
 import javax.inject.Inject;
 
@@ -24,7 +21,6 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 /**
 * Created by bspeice on 5/20/14.

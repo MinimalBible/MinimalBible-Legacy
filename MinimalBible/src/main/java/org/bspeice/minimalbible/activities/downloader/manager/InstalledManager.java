@@ -22,6 +22,8 @@ public class InstalledManager implements BooksListener {
     private Books installedBooks;
     private List<Book> installedBooksList;
 
+    @Inject InstalledManager() {}
+
     /**
      * Register our manager to receive events on Book install
      * This is a relatively expensive operation,

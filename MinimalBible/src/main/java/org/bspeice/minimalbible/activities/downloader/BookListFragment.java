@@ -15,7 +15,6 @@ import android.widget.Toast;
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseFragment;
-import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
@@ -49,9 +48,7 @@ public class BookListFragment extends BaseFragment {
     @InjectView(R.id.lst_download_available)
     ListView downloadsAvailable;
 
-    @Inject DownloadManager downloadManager;
     @Inject RefreshManager refreshManager;
-
     @Inject DownloadPrefs downloadPrefs;
 
 	private ProgressDialog refreshDialog;
