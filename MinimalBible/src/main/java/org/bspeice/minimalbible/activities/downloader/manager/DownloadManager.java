@@ -29,7 +29,6 @@ public class DownloadManager {
      */
     @Inject
 	public DownloadManager() {
-        MinimalBible.getApplication().inject(this);
 		setDownloadDir();
 	}
 
