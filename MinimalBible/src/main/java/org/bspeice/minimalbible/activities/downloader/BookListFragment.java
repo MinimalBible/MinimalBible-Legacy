@@ -16,7 +16,6 @@ import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseFragment;
 import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
-import org.bspeice.minimalbible.activities.downloader.manager.EventBookList;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
