@@ -19,8 +19,6 @@ import javax.inject.Singleton;
 @Singleton
 public class InstalledManager implements BooksListener {
 
-    @Inject DownloadManager downloadManager;
-
     private Books installedBooks;
     private List<Book> installedBooksList;
 
@@ -30,6 +28,7 @@ public class InstalledManager implements BooksListener {
      * so we don't put it in the constructor.
      */
     public void initialize() {
+        //TODO: Move this to a true async, rather than separate initialize() function
         installedBooks = Books.installed();
         installedBooksList = installedBooks.getBooks();
         installedBooks.addBooksListener(this);
