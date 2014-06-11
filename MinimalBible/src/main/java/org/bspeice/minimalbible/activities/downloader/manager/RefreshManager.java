@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -29,7 +30,7 @@ public class RefreshManager {
      * Cached copy of modules that are available so we don't refresh for everyone who requests it.
      */
     private Observable<Map<Installer, List<Book>>> availableModules;
-    private boolean refreshComplete;
+    private final AtomicBoolean refreshComplete = new AtomicBoolean();
 
     public RefreshManager() {
         MinimalBible.getApplication().inject(this);
@@ -53,7 +54,7 @@ public class RefreshManager {
 
             // Set refresh complete when it is.
             availableModules.subscribeOn(AndroidSchedulers.handlerThread(backgroundHandler))
-                    .subscribe(null, null, () -> refreshComplete = true);
+                    .subscribe(null, null, () -> refreshComplete.set(true));
         }
     }
 
@@ -88,5 +89,9 @@ public class RefreshManager {
         })
         .take(1)
         .map(element -> element.entrySet().iterator().next().getKey());
+    }
+
+    public boolean isRefreshComplete() {
+        return refreshComplete.get();
     }
 }
