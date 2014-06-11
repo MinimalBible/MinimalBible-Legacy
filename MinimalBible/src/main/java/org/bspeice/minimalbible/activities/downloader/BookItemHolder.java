@@ -22,6 +22,9 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
 * Created by bspeice on 5/20/14.
@@ -36,11 +39,11 @@ public class BookItemHolder {
     @InjectView(R.id.download_ibtn_download) ImageButton isDownloaded;
     @InjectView(R.id.download_prg_download) ProgressWheel downloadProgress;
 
-    @Inject DownloadManager downloadManager;
     @Inject BookDownloadManager bookDownloadManager;
     @Inject InstalledManager installedManager;
 
     Book b;
+    Subscription subscription;
 
     public BookItemHolder(View v, Book b) {
         ButterKnife.inject(this, v);
@@ -57,7 +60,10 @@ public class BookItemHolder {
         } else if (installedManager.isInstalled(b)) {
             displayInstalled();
         }
-        downloadManager.getDownloadBus().register(this);
+        //TODO: Refactor
+        subscription = bookDownloadManager.getDownloadEvents()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe((event) -> onEventMainThread(event));
     }
 
     private void displayInstalled() {
@@ -134,6 +140,6 @@ public class BookItemHolder {
     }
 
     public void onScrollOffscreen() {
-        downloadManager.getDownloadBus().unregister(this);
+        subscription.unsubscribe();
     }
 }

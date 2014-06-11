@@ -48,8 +48,6 @@ public class BookDownloadManager implements WorkListener, BooksListener {
     @Inject
     Provider<BookDownloadThread> dlThreadProvider;
 
-    @Inject DownloadManager downloadManager;
-
     public BookDownloadManager() {
         bookMappings = new HashMap<String, Book>();
         inProgressDownloads = new HashMap<Book, DLProgressEvent>();
@@ -100,6 +98,10 @@ public class BookDownloadManager implements WorkListener, BooksListener {
         } else {
             return null;
         }
+    }
+
+    public PublishSubject<DLProgressEvent> getDownloadEvents() {
+        return downloadEvents;
     }
 
     @Override
