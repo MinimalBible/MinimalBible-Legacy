@@ -54,12 +54,12 @@ public class RefreshManager {
 
             // Set refresh complete when it is.
             availableModules.subscribeOn(AndroidSchedulers.handlerThread(backgroundHandler))
-                    .subscribe(null, null, () -> refreshComplete.set(true));
+                    .subscribe((onNext) -> {}, (onError) -> {}, () -> refreshComplete.set(true));
         }
     }
 
     public Observable<Map<Installer, List<Book>>> getAvailableModules() {
-        return getAvailableModules();
+        return availableModules;
     }
 
     /**
