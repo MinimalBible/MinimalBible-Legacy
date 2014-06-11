@@ -1,5 +1,7 @@
 package org.bspeice.minimalbible.activities.downloader.manager;
 
+import android.os.Handler;
+
 import org.bspeice.minimalbible.MinimalBible;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.install.Installer;
@@ -12,7 +14,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Handle refreshing the list of books available as needed
@@ -25,11 +28,11 @@ public class RefreshManager {
     /**
      * Cached copy of modules that are available so we don't refresh for everyone who requests it.
      */
-    private Map<Installer, List<Book>> availableModules;
+    private Observable<Map<Installer, List<Book>>> availableModules;
+    private boolean refreshComplete;
 
     public RefreshManager() {
         MinimalBible.getApplication().inject(this);
-        availableModules = new HashMap<Installer, List<Book>>();
         refreshModules();
     }
 
@@ -38,18 +41,20 @@ public class RefreshManager {
      * when it's done.
      */
     private void refreshModules() {
-        EventBus refreshBus = downloadManager.getDownloadBus();
-        refreshBus.register(this);
-        new BookRefreshTask().execute(downloadManager.getInstallersArray());
-    }
+        if (availableModules == null) {
+            Handler backgroundHandler = new Handler();
+            availableModules = Observable.from(downloadManager.getInstallers().values())
+                    .map(installer -> {
+                        Map<Installer, List<Book>> map = new HashMap<Installer, List<Book>>();
+                        map.put(installer, installer.getBooks());
+                        return map;
+                    }).observeOn(AndroidSchedulers.handlerThread(backgroundHandler))
+                    .cache();
 
-    /**
-     * When book refresh is done, cache the list so we can give that to someone else
-     * @param event A POJO wrapper around the Book list
-     */
-    @SuppressWarnings("unused")
-    public void onEvent(EventBookList event) {
-        this.availableModules = event.getInstallerMapping();
+            // Set refresh complete when it is.
+            availableModules.subscribeOn(AndroidSchedulers.handlerThread(backgroundHandler))
+                    .subscribe(null, null, () -> refreshComplete = true);
+        }
     }
 
     /**
@@ -57,15 +62,14 @@ public class RefreshManager {
      * @return The cached book list, or null
      */
     public List<Book> getBookList() {
-        if (availableModules.values().size() == 0) {
-            return null;
-        } else {
-            List<Book> bookList = new ArrayList<Book>();
-            for (List<Book> l : availableModules.values()) {
-                bookList.addAll(l);
+        List<Book> availableList = new ArrayList<>();
+        availableModules.reduce(availableList, (books, installerListMap) -> {
+            for (List<Book> l : installerListMap.values()) {
+                books.addAll(l);
             }
-            return bookList;
-        }
+            return books;
+        });
+        return availableList;
     }
 
     /**
@@ -73,12 +77,16 @@ public class RefreshManager {
      * @param b The book to search for
      * @return The Installer that should be used for this book.
      */
-    public Installer installerFromBook(Book b) {
-        for (Map.Entry<Installer, List<Book>> entry : availableModules.entrySet()) {
-            if (entry.getValue().contains(b)) {
-                return entry.getKey();
+    public Observable<Installer> installerFromBook(Book b) {
+        return availableModules.filter(installerListMap -> {
+            for (List<Book> element : installerListMap.values()) {
+                if (element.contains(b)) {
+                    return true;
+                }
             }
-        }
-        return null;
+            return false;
+        })
+        .take(1)
+        .map(element -> element.entrySet().iterator().next().getKey());
     }
 }
