@@ -12,6 +12,7 @@ import org.crosswire.jsword.book.Books;
 import org.crosswire.jsword.book.BooksEvent;
 import org.crosswire.jsword.book.BooksListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +20,10 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subjects.ReplaySubject;
+import rx.subjects.Subject;
 
 /**
  * Wrapper to convert JSword progress events to MinimalBible EventBus-based
@@ -38,6 +42,8 @@ public class BookDownloadManager implements WorkListener, BooksListener {
      * Cached copy of downloads in progress so views displaying this info can get it quickly.
      */
     private Map<Book, DLProgressEvent> inProgressDownloads;
+
+    private PublishSubject<DLProgressEvent> downloadEvents = PublishSubject.create();
 
     @Inject
     Provider<BookDownloadThread> dlThreadProvider;
@@ -66,20 +72,19 @@ public class BookDownloadManager implements WorkListener, BooksListener {
     public void workProgressed(WorkEvent ev) {
         Progress job = ev.getJob();
         Log.d("BookDownloadManager", "Download in progress: " + job.getJobID() + " - " + job.getJobName() + " " + job.getWorkDone() + "/" + job.getTotalWork());
-        EventBus downloadBus = downloadManager.getDownloadBus();
         if (bookMappings.containsKey(job.getJobID())) {
             Book b = bookMappings.get(job.getJobID());
 
             if (job.getWorkDone() == job.getTotalWork()) {
                 // Download is complete
                 inProgressDownloads.remove(bookMappings.get(job.getJobID()));
-                downloadBus.post(new DLProgressEvent(DLProgressEvent.PROGRESS_COMPLETE, b));
+                downloadEvents.onNext(new DLProgressEvent(DLProgressEvent.PROGRESS_COMPLETE, b));
             } else {
                 // Track the ongoing download
                 DLProgressEvent event = new DLProgressEvent(job.getWorkDone(),
                         job.getTotalWork(), b);
                 inProgressDownloads.put(b, event);
-                downloadBus.post(event);
+                downloadEvents.onNext(event);
             }
         }
     }
@@ -114,8 +119,7 @@ public class BookDownloadManager implements WorkListener, BooksListener {
         // Not sure why, but the inProgressDownloads might not have our book,
         // so we always trigger the PROGRESS_COMPLETE event.
         // TODO: Make sure all books get to the inProgressDownloads
-        downloadManager.getDownloadBus()
-                .post(new DLProgressEvent(DLProgressEvent.PROGRESS_COMPLETE, b));
+        downloadEvents.onNext(new DLProgressEvent(DLProgressEvent.PROGRESS_COMPLETE, b));
     }
 
     @Override

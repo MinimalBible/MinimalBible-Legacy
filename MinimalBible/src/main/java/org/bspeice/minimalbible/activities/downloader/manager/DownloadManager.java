@@ -11,21 +11,13 @@ import org.crosswire.jsword.book.sword.SwordBookPath;
 import java.io.File;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import de.greenrobot.event.EventBus;
 
 // TODO: Listen to BookInstall events?
 @Singleton
 public class DownloadManager {
 
 	private final String TAG = "DownloadManager";
-
-    @Inject
-    protected EventBus downloadBus;
-
-
 
 	public static final BookCategory[] VALID_CATEGORIES = { BookCategory.BIBLE,
 			BookCategory.COMMENTARY, BookCategory.DICTIONARY,
@@ -48,15 +40,6 @@ public class DownloadManager {
 	}
 
     /**
-     * Helper method to transform the installers map to an array
-     * @return Array with all available {@link org.crosswire.jsword.book.install.Installer} objects
-     */
-	public Installer[] getInstallersArray() {
-		Map<String, Installer> installers = getInstallers();
-		return installers.values().toArray(new Installer[installers.size()]);
-	}
-
-    /**
      * Notify jSword that it needs to store files in the Android internal directory
      * NOTE: Android will uninstall these files if you uninstall MinimalBible.
      */
@@ -71,14 +54,4 @@ public class DownloadManager {
         SwordBookPath.setDownloadDir(new File(home));
         Log.d(TAG, "Sword download path: " + SwordBookPath.getSwordDownloadDir());
 	}
-
-    /**
-     * Get the current download bus
-     * Used to broker refresh events, and ongoing download events
-     */
-	public EventBus getDownloadBus() {
-		return this.downloadBus;
-	}
-
-
 }
