@@ -24,6 +24,7 @@ import org.crosswire.jsword.book.BookComparators;
 import org.crosswire.jsword.book.BookFilter;
 import org.crosswire.jsword.book.FilterUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -118,28 +120,23 @@ public class BookListFragment extends BaseFragment {
      */
 	private void refreshModules() {
         // Check if the downloadManager has already refreshed everything
-		List<Book> bookList = refreshManager.getBookList();
-		if (bookList == null) {
+		if (!refreshManager.isRefreshComplete()) {
             // downloadManager is in progress of refreshing
-            downloadManager.getDownloadBus().register(this);
             refreshDialog = new ProgressDialog(getActivity());
             refreshDialog.setMessage("Refreshing available modules...");
             refreshDialog.setCancelable(false);
             refreshDialog.show();
-        } else {
-            displayBooks(bookList);
         }
-	}
 
-    /**
-     * Used by GreenRobot for notifying us that the book refresh is complete
-     */
-    @SuppressWarnings("unused")
-	public void onEventMainThread(EventBookList event) {
-		if (refreshDialog != null) {
-			refreshDialog.cancel();
-		}
-		displayBooks(event.getBookList());
+        // Listen for the books!
+        refreshManager.getAvailableModules().subscribeOn(AndroidSchedulers.mainThread())
+                .reduce(new ArrayList<Book>(), (books, installerListMap) -> {
+                    for (List<Book> l : installerListMap.values()) {
+                        books.addAll(l);
+                    }
+                    return books;
+                }).take(1)
+                .subscribe((books) -> displayBooks(books));
 	}
 
     /**

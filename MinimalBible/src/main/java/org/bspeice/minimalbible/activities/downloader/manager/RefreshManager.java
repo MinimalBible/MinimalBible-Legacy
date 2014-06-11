@@ -58,6 +58,10 @@ public class RefreshManager {
         }
     }
 
+    public Observable<Map<Installer, List<Book>>> getAvailableModules() {
+        return getAvailableModules();
+    }
+
     /**
      * Get the cached book list
      * @return The cached book list, or null
