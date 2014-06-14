@@ -61,6 +61,14 @@ public class RefreshManager {
         return availableModules;
     }
 
+    public Observable<Book> getAvailableModulesFlattened() {
+        return availableModules
+                // First flatten the Map to its lists
+                .flatMap((books) -> Observable.from(books.values()))
+                // Then flatten the lists
+                .flatMap(Observable::from);
+    }
+
     /**
      * Get the cached book list
      * @return The cached book list, or null
@@ -90,7 +98,7 @@ public class RefreshManager {
             }
             return false;
         })
-        .take(1)
+        .first()
         .map(element -> element.entrySet().iterator().next().getKey());
     }
 

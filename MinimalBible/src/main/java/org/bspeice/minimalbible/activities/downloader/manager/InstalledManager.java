@@ -63,6 +63,9 @@ public class InstalledManager implements BooksListener {
     }
 
     public void removeBook(Book b) {
+        if (installedBooks == null) {
+            initialize();
+        }
         try {
             // This worked in the past, but isn't now...
             // installedBooks.remove(b);

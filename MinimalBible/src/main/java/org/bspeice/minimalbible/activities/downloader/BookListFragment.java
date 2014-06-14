@@ -118,11 +118,7 @@ public class BookListFragment extends BaseFragment {
         }
 
         // Listen for the books!
-        refreshManager.getAvailableModules()
-                // First flatten the Map to its lists
-                .flatMap((books) -> Observable.from(books.values()))
-                // Then flatten the lists
-                .flatMap(Observable::from)
+        refreshManager.getAvailableModulesFlattened()
                 .filter((book) -> book.getBookCategory() ==
                         BookCategory.fromString(getArguments().getString(ARG_BOOK_CATEGORY)))
                 // Repack all the books

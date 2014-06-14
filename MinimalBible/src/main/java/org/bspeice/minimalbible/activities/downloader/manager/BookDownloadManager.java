@@ -56,6 +56,7 @@ public class BookDownloadManager implements WorkListener, BooksListener {
         BookDownloadThread dlThread = dlThreadProvider.get();
         dlThread.downloadBook(b);
         addJob(BookDownloadThread.getJobId(b), b);
+        downloadEvents.onNext(new DLProgressEvent(DLProgressEvent.PROGRESS_BEGINNING, b));
     }
 
     public void addJob(String jobId, Book b) {
