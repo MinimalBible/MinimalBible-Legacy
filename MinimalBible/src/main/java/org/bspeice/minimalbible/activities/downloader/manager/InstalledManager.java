@@ -21,6 +21,7 @@ public class InstalledManager implements BooksListener {
 
     private Books installedBooks;
     private List<Book> installedBooksList;
+    private String TAG = "InstalledManager";
 
     @Inject InstalledManager() {}
 
@@ -45,6 +46,7 @@ public class InstalledManager implements BooksListener {
 
     @Override
     public void bookAdded(BooksEvent booksEvent) {
+        Log.d(TAG, "Book added: " + booksEvent.getBook().toString());
         Book b = booksEvent.getBook();
         if (!installedBooksList.contains(b)) {
             installedBooksList.add(b);
@@ -53,6 +55,7 @@ public class InstalledManager implements BooksListener {
 
     @Override
     public void bookRemoved(BooksEvent booksEvent) {
+        Log.d(TAG, "Book removed: " + booksEvent.getBook().toString());
         Book b = booksEvent.getBook();
         if (installedBooksList.contains(b)) {
             installedBooksList.remove(b);
@@ -61,7 +64,10 @@ public class InstalledManager implements BooksListener {
 
     public void removeBook(Book b) {
         try {
-            installedBooks.removeBook(b);
+            // This worked in the past, but isn't now...
+            // installedBooks.remove(b);
+            Book realBook = installedBooks.getBook(b.getInitials());
+            b.getDriver().delete(realBook);
         } catch (BookException e) {
             Log.e("InstalledManager", "Unable to remove book (already uninstalled?): " + e.getLocalizedMessage());
         }

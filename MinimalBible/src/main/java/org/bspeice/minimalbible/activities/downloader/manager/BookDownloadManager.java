@@ -72,6 +72,7 @@ public class BookDownloadManager implements WorkListener, BooksListener {
             if (job.getWorkDone() == job.getTotalWork()) {
                 // Download is complete
                 inProgressDownloads.remove(bookMappings.get(job.getJobID()));
+                bookMappings.remove(job.getJobID());
                 downloadEvents.onNext(new DLProgressEvent(DLProgressEvent.PROGRESS_COMPLETE, b));
             } else {
                 // Track the ongoing download

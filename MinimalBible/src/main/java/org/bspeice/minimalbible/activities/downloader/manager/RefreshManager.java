@@ -28,6 +28,7 @@ import rx.schedulers.Schedulers;
 public class RefreshManager {
 
     @Inject DownloadManager downloadManager;
+    @Inject InstalledManager installedManager;
 
     /**
      * Cached copy of modules that are available so we don't refresh for everyone who requests it.

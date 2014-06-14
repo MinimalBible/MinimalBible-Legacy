@@ -58,8 +58,9 @@ public class BookItemHolder {
         }
         //TODO: Refactor
         subscription = bookDownloadManager.getDownloadEvents()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe((event) -> onEventMainThread(event));
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter((event) -> event.getB().getInitials() == b.getInitials())
+                .subscribe((event) -> displayProgress((int)event.toCircular()));
     }
 
     private void displayInstalled() {
@@ -74,12 +75,6 @@ public class BookItemHolder {
             isDownloaded.setImageResource(R.drawable.ic_action_download);
         } else {
             bookDownloadManager.installBook(this.b);
-        }
-    }
-
-    public void onEventMainThread(DLProgressEvent event) {
-        if (event.getB().getOsisID().equals(b.getOsisID())) {
-            displayProgress((int) event.toCircular());
         }
     }
 
@@ -121,6 +116,7 @@ public class BookItemHolder {
             downloadProgress.setProgress(progress);
         } else {
             // Download complete
+            subscription.unsubscribe();
             RelativeLayout.LayoutParams acronymParams =
                     (RelativeLayout.LayoutParams)acronym.getLayoutParams();
             acronymParams.addRule(RelativeLayout.LEFT_OF, isDownloaded.getId());
