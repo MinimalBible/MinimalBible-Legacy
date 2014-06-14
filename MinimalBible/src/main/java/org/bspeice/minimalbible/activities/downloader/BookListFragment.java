@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -125,37 +127,30 @@ public class BookListFragment extends BaseFragment {
         }
 
         // Listen for the books!
-        refreshManager.getAvailableModules().subscribeOn(AndroidSchedulers.mainThread())
-                .reduce(new ArrayList<Book>(), (books, installerListMap) -> {
-                    for (List<Book> l : installerListMap.values()) {
-                        books.addAll(l);
+        refreshManager.getAvailableModules()
+                // First flatten the Map to its lists
+                .flatMap((books) -> Observable.from(books.values()))
+                // Then flatten the lists
+                .flatMap((books) -> Observable.from(books))
+                .filter((book) -> book.getBookCategory() ==
+                        BookCategory.fromString(getArguments().getString(ARG_BOOK_CATEGORY)))
+                // Repack all the books
+                .toSortedList((book1, book2) ->
+                        BookComparators.getInitialComparator().compare(book1, book2))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((books) -> {
+                    downloadsAvailable.setAdapter(new BookListAdapter(inflater, books));
+                    if (getActivity() != null) {
+                        // On a screen rotate, getActivity() will be null. But, the activity will
+                        // already have been set up correctly, so we don't need to worry about it.
+                        // If not null, we need to set it up now.
+                        setInsets(getActivity(), downloadsAvailable);
                     }
-                    return books;
-                }).take(1)
-                .subscribe((books) -> displayBooks(books));
+                    if (refreshDialog != null) {
+                        refreshDialog.cancel();
+                    }
+                });
 	}
-
-    /**
-     * Do the hard work of creating the Adapter and displaying books.
-     * @param bookList The (unfiltered) list of {link org.crosswire.jsword.Book}s to display
-     */
-    public void displayBooks(List<Book> bookList) {
-        try {
-            // TODO: Should the filter be applied earlier in the process?
-            List<Book> displayList;
-
-            BookCategory c = BookCategory.fromString(getArguments().getString(ARG_BOOK_CATEGORY));
-            BookFilter f = FilterUtil.filterFromCategory(c);
-            displayList = FilterUtil.applyFilter(bookList, f);
-            Collections.sort(displayList, BookComparators.getInitialComparator());
-
-            downloadsAvailable.setAdapter(new BookListAdapter(inflater, displayList));
-            setInsets(getActivity(), downloadsAvailable);
-        } catch (FilterUtil.InvalidFilterCategoryMappingException e) {
-            // To be honest, there should be no reason you end up here.
-            Log.e(TAG, e.getMessage());
-        }
-    }
 
 	private class DownloadDialogListener implements
 			DialogInterface.OnClickListener {

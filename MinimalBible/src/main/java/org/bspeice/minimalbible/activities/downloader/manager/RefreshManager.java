@@ -1,6 +1,7 @@
 package org.bspeice.minimalbible.activities.downloader.manager;
 
 import android.os.Handler;
+import android.os.HandlerThread;
 
 import org.bspeice.minimalbible.MinimalBible;
 import org.crosswire.jsword.book.Book;
@@ -17,6 +18,8 @@ import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.android.schedulers.HandlerThreadScheduler;
+import rx.schedulers.Schedulers;
 
 /**
  * Handle refreshing the list of books available as needed
@@ -40,20 +43,20 @@ public class RefreshManager {
     /**
      * Do the work of kicking off the AsyncTask to refresh books, and make sure we know
      * when it's done.
+     * TODO: Should I have a better way of scheduling than Schedulers.io()?
      */
     private void refreshModules() {
         if (availableModules == null) {
-            Handler backgroundHandler = new Handler();
             availableModules = Observable.from(downloadManager.getInstallers().values())
                     .map(installer -> {
                         Map<Installer, List<Book>> map = new HashMap<Installer, List<Book>>();
                         map.put(installer, installer.getBooks());
                         return map;
-                    }).observeOn(AndroidSchedulers.handlerThread(backgroundHandler))
+                    }).subscribeOn(Schedulers.io())
                     .cache();
 
             // Set refresh complete when it is.
-            availableModules.subscribeOn(AndroidSchedulers.handlerThread(backgroundHandler))
+            availableModules.observeOn(Schedulers.io())
                     .subscribe((onNext) -> {}, (onError) -> {}, () -> refreshComplete.set(true));
         }
     }
