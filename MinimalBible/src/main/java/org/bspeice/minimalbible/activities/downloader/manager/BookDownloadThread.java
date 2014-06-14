@@ -9,6 +9,8 @@ import org.crosswire.jsword.book.install.Installer;
 
 import javax.inject.Inject;
 
+import rx.schedulers.Schedulers;
+
 /**
  * Thread that handles downloading a book
  */
@@ -31,6 +33,7 @@ public class BookDownloadThread {
 
         // First, look up where the Book came from
         refreshManager.installerFromBook(b)
+                .subscribeOn(Schedulers.io())
                 .subscribe((installer) -> {
                     try {
                         installer.install(b);
