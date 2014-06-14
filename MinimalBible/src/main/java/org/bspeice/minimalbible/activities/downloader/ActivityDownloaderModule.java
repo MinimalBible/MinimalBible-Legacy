@@ -3,15 +3,11 @@ package org.bspeice.minimalbible.activities.downloader;
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadThread;
-import org.bspeice.minimalbible.activities.downloader.manager.BookRefreshTask;
-import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
-import org.bspeice.minimalbible.activities.downloader.manager.InstalledManager;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
 
 import dagger.Module;
 import dagger.Provides;
 import de.devland.esperandro.Esperandro;
-import de.greenrobot.event.EventBus;
 
 /**
  * Module mappings for the classes under the Download Activity
@@ -19,21 +15,13 @@ import de.greenrobot.event.EventBus;
 @Module(
         injects = {
             BookListFragment.class,
-            DownloadManager.class,
-            BookRefreshTask.class,
             BookItemHolder.class,
             BookDownloadManager.class,
             BookDownloadThread.class,
-            RefreshManager.class,
-            InstalledManager.class
+            RefreshManager.class
         }
 )
 public class ActivityDownloaderModule {
-
-    @Provides
-    EventBus provideBus() {
-        return new EventBus();
-    }
 
     @Provides //@Singleton
     DownloadPrefs provideDownloadPrefs() {

@@ -11,17 +11,18 @@ import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.DLProgressEvent;
-import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.InstalledManager;
 import org.crosswire.jsword.book.Book;
-import org.crosswire.jsword.book.BookException;
-import org.crosswire.jsword.book.Books;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
 * Created by bspeice on 5/20/14.
@@ -36,11 +37,11 @@ public class BookItemHolder {
     @InjectView(R.id.download_ibtn_download) ImageButton isDownloaded;
     @InjectView(R.id.download_prg_download) ProgressWheel downloadProgress;
 
-    @Inject DownloadManager downloadManager;
     @Inject BookDownloadManager bookDownloadManager;
     @Inject InstalledManager installedManager;
 
-    Book b;
+    private final Book b;
+    private Subscription subscription;
 
     public BookItemHolder(View v, Book b) {
         ButterKnife.inject(this, v);
@@ -57,7 +58,21 @@ public class BookItemHolder {
         } else if (installedManager.isInstalled(b)) {
             displayInstalled();
         }
-        downloadManager.getDownloadBus().register(this);
+        //TODO: Refactor
+        subscription = bookDownloadManager.getDownloadEvents()
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter(new Func1<DLProgressEvent, Boolean>() {
+                    @Override
+                    public Boolean call(DLProgressEvent event) {
+                        return event.getB().getInitials().equals(b.getInitials());
+                    }
+                })
+                .subscribe(new Action1<DLProgressEvent>() {
+                    @Override
+                    public void call(DLProgressEvent event) {
+                        BookItemHolder.this.displayProgress((int) event.toCircular());
+                    }
+                });
     }
 
     private void displayInstalled() {
@@ -72,12 +87,6 @@ public class BookItemHolder {
             isDownloaded.setImageResource(R.drawable.ic_action_download);
         } else {
             bookDownloadManager.installBook(this.b);
-        }
-    }
-
-    public void onEventMainThread(DLProgressEvent event) {
-        if (event.getB().getOsisID().equals(b.getOsisID())) {
-            displayProgress((int) event.toCircular());
         }
     }
 
@@ -119,6 +128,7 @@ public class BookItemHolder {
             downloadProgress.setProgress(progress);
         } else {
             // Download complete
+            subscription.unsubscribe();
             RelativeLayout.LayoutParams acronymParams =
                     (RelativeLayout.LayoutParams)acronym.getLayoutParams();
             acronymParams.addRule(RelativeLayout.LEFT_OF, isDownloaded.getId());
@@ -134,6 +144,6 @@ public class BookItemHolder {
     }
 
     public void onScrollOffscreen() {
-        downloadManager.getDownloadBus().unregister(this);
+        subscription.unsubscribe();
     }
 }

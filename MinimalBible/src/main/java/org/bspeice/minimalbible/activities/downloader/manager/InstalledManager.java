@@ -19,10 +19,11 @@ import javax.inject.Singleton;
 @Singleton
 public class InstalledManager implements BooksListener {
 
-    @Inject DownloadManager downloadManager;
-
     private Books installedBooks;
     private List<Book> installedBooksList;
+    private String TAG = "InstalledManager";
+
+    @Inject InstalledManager() {}
 
     /**
      * Register our manager to receive events on Book install
@@ -30,6 +31,7 @@ public class InstalledManager implements BooksListener {
      * so we don't put it in the constructor.
      */
     public void initialize() {
+        //TODO: Move this to a true async, rather than separate initialize() function
         installedBooks = Books.installed();
         installedBooksList = installedBooks.getBooks();
         installedBooks.addBooksListener(this);
@@ -44,6 +46,7 @@ public class InstalledManager implements BooksListener {
 
     @Override
     public void bookAdded(BooksEvent booksEvent) {
+        Log.d(TAG, "Book added: " + booksEvent.getBook().toString());
         Book b = booksEvent.getBook();
         if (!installedBooksList.contains(b)) {
             installedBooksList.add(b);
@@ -52,6 +55,7 @@ public class InstalledManager implements BooksListener {
 
     @Override
     public void bookRemoved(BooksEvent booksEvent) {
+        Log.d(TAG, "Book removed: " + booksEvent.getBook().toString());
         Book b = booksEvent.getBook();
         if (installedBooksList.contains(b)) {
             installedBooksList.remove(b);
@@ -59,10 +63,19 @@ public class InstalledManager implements BooksListener {
     }
 
     public void removeBook(Book b) {
-        try {
-            installedBooks.removeBook(b);
-        } catch (BookException e) {
-            Log.e("InstalledManager", "Unable to remove book (already uninstalled?): " + e.getLocalizedMessage());
+        if (installedBooks == null) {
+            initialize();
+        }
+        // Not sure why we need to call this multiple times, but...
+        while (Books.installed().getBooks().contains(b)) {
+            try {
+                // This worked in the past, but isn't now...
+                // installedBooks.remove(b);
+                Book realBook = installedBooks.getBook(b.getInitials());
+                b.getDriver().delete(realBook);
+            } catch (BookException e) {
+                Log.e("InstalledManager", "Unable to remove book (already uninstalled?): " + e.getLocalizedMessage());
+            }
         }
     }
 }

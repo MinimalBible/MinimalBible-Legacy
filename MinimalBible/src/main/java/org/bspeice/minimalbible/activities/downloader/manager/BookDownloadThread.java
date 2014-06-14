@@ -9,6 +9,9 @@ import org.crosswire.jsword.book.install.Installer;
 
 import javax.inject.Inject;
 
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+
 /**
  * Thread that handles downloading a book
  */
@@ -18,8 +21,9 @@ public class BookDownloadThread {
     private final String TAG = "BookDownloadThread";
 
     @Inject
-    DownloadManager downloadManager;
-    @Inject RefreshManager refreshManager;
+    BookDownloadManager bookDownloadManager;
+    @Inject
+    RefreshManager refreshManager;
 
     public BookDownloadThread() {
         MinimalBible.getApplication().inject(this);
@@ -29,31 +33,32 @@ public class BookDownloadThread {
         // So, the JobManager can't be injected, but we'll make do
 
         // First, look up where the Book came from
-        final Installer i = refreshManager.installerFromBook(b);
+        refreshManager.installerFromBook(b)
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<Installer>() {
+                    @Override
+                    public void call(Installer installer) {
+                        try {
+                            installer.install(b);
+                        } catch (InstallException e) {
+                            Log.d(TAG, e.getMessage());
+                        }
 
-        final Thread worker = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    i.install(b);
-                } catch (InstallException e) {
-                    Log.d(TAG, e.getMessage());
-                }
-            }
-        };
-        worker.start();
-        // The worker automatically communicates with the JobManager for its progress.
-
-        downloadManager.getDownloadBus().post(new DLProgressEvent(DLProgressEvent.PROGRESS_BEGINNING, b));
+                        bookDownloadManager.getDownloadEvents()
+                                .onNext(new DLProgressEvent(DLProgressEvent.PROGRESS_BEGINNING, b));
+                    }
+                });
     }
 
     /**
      * Build what the installer creates the job name as.
      * Likely prone to be brittle.
      * TODO: Make sure to test that this is an accurate job name
+     *
      * @param b The book to predict the download job name of
      * @return The name of the job that will/is download/ing this book
      */
+
     public static String getJobId(Book b) {
         return "INSTALL_BOOK-" + b.getInitials();
     }

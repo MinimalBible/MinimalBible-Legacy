@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,22 +14,22 @@ import android.widget.Toast;
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseFragment;
-import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
-import org.bspeice.minimalbible.activities.downloader.manager.EventBookList;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
 import org.crosswire.jsword.book.BookComparators;
-import org.crosswire.jsword.book.BookFilter;
-import org.crosswire.jsword.book.FilterUtil;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -48,9 +47,7 @@ public class BookListFragment extends BaseFragment {
     @InjectView(R.id.lst_download_available)
     ListView downloadsAvailable;
 
-    @Inject DownloadManager downloadManager;
     @Inject RefreshManager refreshManager;
-
     @Inject DownloadPrefs downloadPrefs;
 
 	private ProgressDialog refreshDialog;
@@ -96,7 +93,7 @@ public class BookListFragment extends BaseFragment {
      * Trigger the functionality to display a list of modules. Prompts user if downloading
      * from the internet is allowable.
      */
- 	public void displayModules() {
+ 	private void displayModules() {
 		boolean dialogDisplayed = downloadPrefs.hasShownDownloadDialog();
 		
 		if (!dialogDisplayed) {
@@ -118,51 +115,48 @@ public class BookListFragment extends BaseFragment {
      */
 	private void refreshModules() {
         // Check if the downloadManager has already refreshed everything
-		List<Book> bookList = refreshManager.getBookList();
-		if (bookList == null) {
+		if (!refreshManager.isRefreshComplete()) {
             // downloadManager is in progress of refreshing
-            downloadManager.getDownloadBus().register(this);
             refreshDialog = new ProgressDialog(getActivity());
             refreshDialog.setMessage("Refreshing available modules...");
             refreshDialog.setCancelable(false);
             refreshDialog.show();
-        } else {
-            displayBooks(bookList);
         }
+
+        // Listen for the books!
+        refreshManager.getAvailableModulesFlattened()
+                .filter(new Func1<Book, Boolean>() {
+                    @Override
+                    public Boolean call(Book book) {
+                        return book.getBookCategory() ==
+                                BookCategory.fromString(BookListFragment.this.getArguments()
+                                        .getString(ARG_BOOK_CATEGORY));
+                    }
+                })
+                // Repack all the books
+                .toSortedList(new Func2<Book, Book, Integer>() {
+                    @Override
+                    public Integer call(Book book1, Book book2) {
+                        return BookComparators.getInitialComparator().compare(book1, book2);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Book>>() {
+                    @Override
+                    public void call(List<Book> books) {
+                        downloadsAvailable.setAdapter(new BookListAdapter(inflater, books));
+                        if (BookListFragment.this.getActivity() != null) {
+                            // On a screen rotate, getActivity() will be null. But, the activity will
+                            // already have been set up correctly, so we don't need to worry about it.
+                            // If not null, we need to set it up now.
+                            setInsets(BookListFragment.this.getActivity(), downloadsAvailable);
+                        }
+                        if (refreshDialog != null) {
+                            refreshDialog.cancel();
+                        }
+                    }
+                });
 	}
-
-    /**
-     * Used by GreenRobot for notifying us that the book refresh is complete
-     */
-    @SuppressWarnings("unused")
-	public void onEventMainThread(EventBookList event) {
-		if (refreshDialog != null) {
-			refreshDialog.cancel();
-		}
-		displayBooks(event.getBookList());
-	}
-
-    /**
-     * Do the hard work of creating the Adapter and displaying books.
-     * @param bookList The (unfiltered) list of {link org.crosswire.jsword.Book}s to display
-     */
-    public void displayBooks(List<Book> bookList) {
-        try {
-            // TODO: Should the filter be applied earlier in the process?
-            List<Book> displayList;
-
-            BookCategory c = BookCategory.fromString(getArguments().getString(ARG_BOOK_CATEGORY));
-            BookFilter f = FilterUtil.filterFromCategory(c);
-            displayList = FilterUtil.applyFilter(bookList, f);
-            Collections.sort(displayList, BookComparators.getInitialComparator());
-
-            downloadsAvailable.setAdapter(new BookListAdapter(inflater, displayList));
-            setInsets(getActivity(), downloadsAvailable);
-        } catch (FilterUtil.InvalidFilterCategoryMappingException e) {
-            // To be honest, there should be no reason you end up here.
-            Log.e(TAG, e.getMessage());
-        }
-    }
 
 	private class DownloadDialogListener implements
 			DialogInterface.OnClickListener {

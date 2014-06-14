@@ -6,8 +6,8 @@ import org.crosswire.jsword.book.Book;
  * Used for notifying that a book's download progress is ongoing
  */
 public class DLProgressEvent {
-    private int progress;
-    private Book b;
+    private final int progress;
+    private final Book b;
 
     public static final int PROGRESS_COMPLETE = 100;
     public static final int PROGRESS_BEGINNING = 0;
