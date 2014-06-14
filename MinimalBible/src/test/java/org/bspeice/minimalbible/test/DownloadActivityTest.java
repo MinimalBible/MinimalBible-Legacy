@@ -67,7 +67,12 @@ public class DownloadActivityTest extends InstrumentationTestCase {
         final Book testBook = i.getBooks().get(0);
         bdm.installBook(testBook);
         await().atMost(30, TimeUnit.SECONDS)
-                .until(() -> Books.installed().getBooks().contains(testBook));
+                .until(new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        return Books.installed().getBooks().contains(testBook);
+                    }
+                });
 
         // Validate that we can actually do something with the book
         // TODO: Validate that the book exists on the filesystem too
@@ -83,7 +88,12 @@ public class DownloadActivityTest extends InstrumentationTestCase {
         // TODO: Validate that the book is off the filesystem
         im.removeBook(testBook);
         await().atMost(10, TimeUnit.SECONDS)
-                .until(() -> !Books.installed().getBooks().contains(testBook));
+                .until(new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        return !Books.installed().getBooks().contains(testBook);
+                    }
+                });
     }
 
 }

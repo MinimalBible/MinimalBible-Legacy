@@ -5,9 +5,11 @@ import android.util.Log;
 import org.bspeice.minimalbible.MinimalBible;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.install.InstallException;
+import org.crosswire.jsword.book.install.Installer;
 
 import javax.inject.Inject;
 
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -33,14 +35,18 @@ public class BookDownloadThread {
         // First, look up where the Book came from
         refreshManager.installerFromBook(b)
                 .subscribeOn(Schedulers.io())
-                .subscribe((installer) -> {
-                    try {
-                        installer.install(b);
-                    } catch (InstallException e) {
-                        Log.d(TAG, e.getMessage());
-                    }
+                .subscribe(new Action1<Installer>() {
+                    @Override
+                    public void call(Installer installer) {
+                        try {
+                            installer.install(b);
+                        } catch (InstallException e) {
+                            Log.d(TAG, e.getMessage());
+                        }
 
-                    bookDownloadManager.getDownloadEvents().onNext(new DLProgressEvent(DLProgressEvent.PROGRESS_BEGINNING, b));
+                        bookDownloadManager.getDownloadEvents()
+                                .onNext(new DLProgressEvent(DLProgressEvent.PROGRESS_BEGINNING, b));
+                    }
                 });
     }
 

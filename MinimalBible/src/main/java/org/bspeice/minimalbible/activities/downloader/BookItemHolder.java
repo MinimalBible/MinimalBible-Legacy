@@ -21,6 +21,8 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
 * Created by bspeice on 5/20/14.
@@ -59,8 +61,18 @@ public class BookItemHolder {
         //TODO: Refactor
         subscription = bookDownloadManager.getDownloadEvents()
                 .observeOn(AndroidSchedulers.mainThread())
-                .filter((event) -> event.getB().getInitials().equals(b.getInitials()))
-                .subscribe((event) -> displayProgress((int) event.toCircular()));
+                .filter(new Func1<DLProgressEvent, Boolean>() {
+                    @Override
+                    public Boolean call(DLProgressEvent event) {
+                        return event.getB().getInitials().equals(b.getInitials());
+                    }
+                })
+                .subscribe(new Action1<DLProgressEvent>() {
+                    @Override
+                    public void call(DLProgressEvent event) {
+                        BookItemHolder.this.displayProgress((int) event.toCircular());
+                    }
+                });
     }
 
     private void displayInstalled() {

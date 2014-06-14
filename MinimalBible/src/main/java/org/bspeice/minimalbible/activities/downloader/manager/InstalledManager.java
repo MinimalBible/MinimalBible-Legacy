@@ -66,13 +66,16 @@ public class InstalledManager implements BooksListener {
         if (installedBooks == null) {
             initialize();
         }
-        try {
-            // This worked in the past, but isn't now...
-            // installedBooks.remove(b);
-            Book realBook = installedBooks.getBook(b.getInitials());
-            b.getDriver().delete(realBook);
-        } catch (BookException e) {
-            Log.e("InstalledManager", "Unable to remove book (already uninstalled?): " + e.getLocalizedMessage());
+        // Not sure why we need to call this multiple times, but...
+        while (Books.installed().getBooks().contains(b)) {
+            try {
+                // This worked in the past, but isn't now...
+                // installedBooks.remove(b);
+                Book realBook = installedBooks.getBook(b.getInitials());
+                b.getDriver().delete(realBook);
+            } catch (BookException e) {
+                Log.e("InstalledManager", "Unable to remove book (already uninstalled?): " + e.getLocalizedMessage());
+            }
         }
     }
 }

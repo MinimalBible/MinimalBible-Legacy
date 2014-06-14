@@ -14,6 +14,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 /**
@@ -44,16 +48,30 @@ public class RefreshManager {
     private void refreshModules() {
         if (availableModules == null) {
             availableModules = Observable.from(downloadManager.getInstallers().values())
-                    .map(installer -> {
-                        Map<Installer, List<Book>> map = new HashMap<Installer, List<Book>>();
-                        map.put(installer, installer.getBooks());
-                        return map;
+                    .map(new Func1<Installer, Map<Installer, List<Book>>>() {
+                        @Override
+                        public Map<Installer, List<Book>> call(Installer installer) {
+                            Map<Installer, List<Book>> map = new HashMap<Installer, List<Book>>();
+                            map.put(installer, installer.getBooks());
+                            return map;
+                        }
                     }).subscribeOn(Schedulers.io())
                     .cache();
 
             // Set refresh complete when it is.
             availableModules.observeOn(Schedulers.io())
-                    .subscribe((onNext) -> {}, (onError) -> {}, () -> refreshComplete.set(true));
+                    .subscribe(new Action1<Map<Installer, List<Book>>>() {
+                        @Override
+                        public void call(Map<Installer, List<Book>> onNext) {}
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable onError) {}
+                    }, new Action0() {
+                        @Override
+                        public void call() {
+                            refreshComplete.set(true);
+                        }
+                    });
         }
     }
 
@@ -64,9 +82,19 @@ public class RefreshManager {
     public Observable<Book> getAvailableModulesFlattened() {
         return availableModules
                 // First flatten the Map to its lists
-                .flatMap((books) -> Observable.from(books.values()))
+                .flatMap(new Func1<Map<Installer, List<Book>>, Observable<? extends List<Book>>>() {
+                    @Override
+                    public Observable<? extends List<Book>> call(Map<Installer, List<Book>> books) {
+                        return Observable.from(books.values());
+                    }
+                })
                 // Then flatten the lists
-                .flatMap(Observable::from);
+                .flatMap(new Func1<List<Book>, Observable<? extends Book>>() {
+                    @Override
+                    public Observable<? extends Book> call(List<Book> t1) {
+                        return Observable.from(t1);
+                    }
+                });
     }
 
     /**
@@ -74,12 +102,16 @@ public class RefreshManager {
      * @return The cached book list, or null
      */
     public List<Book> getBookList() {
-        List<Book> availableList = new ArrayList<>();
-        availableModules.reduce(availableList, (books, installerListMap) -> {
-            for (List<Book> l : installerListMap.values()) {
-                books.addAll(l);
+        List<Book> availableList = new ArrayList<Book>();
+        availableModules.reduce(availableList,
+                new Func2<List<Book>, Map<Installer, List<Book>>, List<Book>>() {
+            @Override
+            public List<Book> call(List<Book> books, Map<Installer, List<Book>> installerListMap) {
+                for (List<Book> l : installerListMap.values()) {
+                    books.addAll(l);
+                }
+                return books;
             }
-            return books;
         });
         return availableList;
     }
@@ -89,17 +121,25 @@ public class RefreshManager {
      * @param b The book to search for
      * @return The Installer that should be used for this book.
      */
-    public Observable<Installer> installerFromBook(Book b) {
-        return availableModules.filter(installerListMap -> {
-            for (List<Book> element : installerListMap.values()) {
-                if (element.contains(b)) {
-                    return true;
+    public Observable<Installer> installerFromBook(final Book b) {
+        return availableModules.filter(new Func1<Map<Installer, List<Book>>, Boolean>() {
+            @Override
+            public Boolean call(Map<Installer, List<Book>> installerListMap) {
+                for (List<Book> element : installerListMap.values()) {
+                    if (element.contains(b)) {
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
         })
         .first()
-        .map(element -> element.entrySet().iterator().next().getKey());
+        .map(new Func1<Map<Installer, List<Book>>, Installer>() {
+            @Override
+            public Installer call(Map<Installer, List<Book>> element) {
+                return element.entrySet().iterator().next().getKey();
+            }
+        });
     }
 
     public boolean isRefreshComplete() {

@@ -15,8 +15,11 @@ import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseFragment;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
+import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
 import org.crosswire.jsword.book.BookComparators;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -24,6 +27,9 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -119,22 +125,35 @@ public class BookListFragment extends BaseFragment {
 
         // Listen for the books!
         refreshManager.getAvailableModulesFlattened()
-                .filter((book) -> book.getBookCategory() ==
-                        BookCategory.fromString(getArguments().getString(ARG_BOOK_CATEGORY)))
-                // Repack all the books
-                .toSortedList((book1, book2) ->
-                        BookComparators.getInitialComparator().compare(book1, book2))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((books) -> {
-                    downloadsAvailable.setAdapter(new BookListAdapter(inflater, books));
-                    if (getActivity() != null) {
-                        // On a screen rotate, getActivity() will be null. But, the activity will
-                        // already have been set up correctly, so we don't need to worry about it.
-                        // If not null, we need to set it up now.
-                        setInsets(getActivity(), downloadsAvailable);
+                .filter(new Func1<Book, Boolean>() {
+                    @Override
+                    public Boolean call(Book book) {
+                        return book.getBookCategory() ==
+                                BookCategory.fromString(BookListFragment.this.getArguments()
+                                        .getString(ARG_BOOK_CATEGORY));
                     }
-                    if (refreshDialog != null) {
-                        refreshDialog.cancel();
+                })
+                // Repack all the books
+                .toSortedList(new Func2<Book, Book, Integer>() {
+                    @Override
+                    public Integer call(Book book1, Book book2) {
+                        return BookComparators.getInitialComparator().compare(book1, book2);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Book>>() {
+                    @Override
+                    public void call(List<Book> books) {
+                        downloadsAvailable.setAdapter(new BookListAdapter(inflater, books));
+                        if (BookListFragment.this.getActivity() != null) {
+                            // On a screen rotate, getActivity() will be null. But, the activity will
+                            // already have been set up correctly, so we don't need to worry about it.
+                            // If not null, we need to set it up now.
+                            setInsets(BookListFragment.this.getActivity(), downloadsAvailable);
+                        }
+                        if (refreshDialog != null) {
+                            refreshDialog.cancel();
+                        }
                     }
                 });
 	}
