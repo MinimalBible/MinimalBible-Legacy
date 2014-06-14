@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +15,8 @@ import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseFragment;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
-import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.BookCategory;
 import org.crosswire.jsword.book.BookComparators;
-import org.crosswire.jsword.book.BookFilter;
-import org.crosswire.jsword.book.FilterUtil;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -96,7 +87,7 @@ public class BookListFragment extends BaseFragment {
      * Trigger the functionality to display a list of modules. Prompts user if downloading
      * from the internet is allowable.
      */
- 	public void displayModules() {
+ 	private void displayModules() {
 		boolean dialogDisplayed = downloadPrefs.hasShownDownloadDialog();
 		
 		if (!dialogDisplayed) {
@@ -131,7 +122,7 @@ public class BookListFragment extends BaseFragment {
                 // First flatten the Map to its lists
                 .flatMap((books) -> Observable.from(books.values()))
                 // Then flatten the lists
-                .flatMap((books) -> Observable.from(books))
+                .flatMap(Observable::from)
                 .filter((book) -> book.getBookCategory() ==
                         BookCategory.fromString(getArguments().getString(ARG_BOOK_CATEGORY)))
                 // Repack all the books

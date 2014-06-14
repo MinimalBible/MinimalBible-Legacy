@@ -38,8 +38,8 @@ public class BookItemHolder {
     @Inject BookDownloadManager bookDownloadManager;
     @Inject InstalledManager installedManager;
 
-    Book b;
-    Subscription subscription;
+    private final Book b;
+    private Subscription subscription;
 
     public BookItemHolder(View v, Book b) {
         ButterKnife.inject(this, v);
@@ -59,8 +59,8 @@ public class BookItemHolder {
         //TODO: Refactor
         subscription = bookDownloadManager.getDownloadEvents()
                 .observeOn(AndroidSchedulers.mainThread())
-                .filter((event) -> event.getB().getInitials() == b.getInitials())
-                .subscribe((event) -> displayProgress((int)event.toCircular()));
+                .filter((event) -> event.getB().getInitials().equals(b.getInitials()))
+                .subscribe((event) -> displayProgress((int) event.toCircular()));
     }
 
     private void displayInstalled() {

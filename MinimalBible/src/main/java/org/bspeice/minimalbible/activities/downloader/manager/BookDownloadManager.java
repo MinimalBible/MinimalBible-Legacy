@@ -32,14 +32,14 @@ public class BookDownloadManager implements WorkListener, BooksListener {
     /**
      * Mapping of Job ID to the EventBus we should trigger progress on
      */
-    private Map<String, Book> bookMappings;
+    private final Map<String, Book> bookMappings;
 
     /**
      * Cached copy of downloads in progress so views displaying this info can get it quickly.
      */
-    private Map<Book, DLProgressEvent> inProgressDownloads;
+    private final Map<Book, DLProgressEvent> inProgressDownloads;
 
-    private PublishSubject<DLProgressEvent> downloadEvents = PublishSubject.create();
+    private final PublishSubject<DLProgressEvent> downloadEvents = PublishSubject.create();
 
     @Inject
     Provider<BookDownloadThread> dlThreadProvider;

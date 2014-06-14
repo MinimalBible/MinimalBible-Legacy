@@ -1,8 +1,5 @@
 package org.bspeice.minimalbible.activities.downloader.manager;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-
 import org.bspeice.minimalbible.MinimalBible;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.install.Installer;
@@ -17,8 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.android.schedulers.HandlerThreadScheduler;
 import rx.schedulers.Schedulers;
 
 /**

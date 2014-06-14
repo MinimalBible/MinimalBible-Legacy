@@ -1,17 +1,16 @@
 package org.bspeice.minimalbible.activities.downloader;
 
-import org.bspeice.minimalbible.R;
-import org.bspeice.minimalbible.activities.BaseActivity;
-import org.bspeice.minimalbible.activities.BaseNavigationDrawerFragment;
-import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
-
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import org.bspeice.minimalbible.R;
+import org.bspeice.minimalbible.activities.BaseActivity;
+import org.bspeice.minimalbible.activities.BaseNavigationDrawerFragment;
+import org.bspeice.minimalbible.activities.downloader.manager.DownloadManager;
 
 public class DownloadActivity extends BaseActivity implements
 		BaseNavigationDrawerFragment.NavigationDrawerCallbacks {

@@ -17,7 +17,7 @@ public class BaseFragment extends Fragment {
      * @param context The {@link android.app.Activity} we are displaying in
      * @param view The {@link android.view.View} we need to calculate the offset for.
      */
-    public static void setInsets(Activity context, View view) {
+    protected static void setInsets(Activity context, View view) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return;
         SystemBarTintManager tintManager = new SystemBarTintManager(context);
         SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();

@@ -15,9 +15,9 @@ import java.util.List;
  * Adapter to inflate list_download_items.xml
  */
 public class BookListAdapter extends BaseAdapter implements AbsListView.RecyclerListener {
-    private List<Book> bookList;
+    private final List<Book> bookList;
 
-    private LayoutInflater inflater;
+    private final LayoutInflater inflater;
 
     public BookListAdapter(LayoutInflater inflater, List<Book> bookList) {
         this.bookList = bookList;

@@ -3,7 +3,6 @@ package org.bspeice.minimalbible.activities.downloader;
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadManager;
 import org.bspeice.minimalbible.activities.downloader.manager.BookDownloadThread;
-import org.bspeice.minimalbible.activities.downloader.manager.InstalledManager;
 import org.bspeice.minimalbible.activities.downloader.manager.RefreshManager;
 
 import dagger.Module;

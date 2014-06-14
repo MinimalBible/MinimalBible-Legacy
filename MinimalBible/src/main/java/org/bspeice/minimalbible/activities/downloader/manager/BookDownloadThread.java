@@ -5,7 +5,6 @@ import android.util.Log;
 import org.bspeice.minimalbible.MinimalBible;
 import org.crosswire.jsword.book.Book;
 import org.crosswire.jsword.book.install.InstallException;
-import org.crosswire.jsword.book.install.Installer;
 
 import javax.inject.Inject;
 
