@@ -2,6 +2,11 @@ package org.bspeice.minimalbible;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
+
+import org.crosswire.jsword.book.sword.SwordBookPath;
+
+import java.io.File;
 
 import dagger.ObjectGraph;
 
@@ -17,6 +22,8 @@ public class MinimalBible extends Application {
      * Used mostly so we have a fixed point to get the App Context from
      */
 	private static MinimalBible instance;
+
+    private String TAG = "MinimalBible";
 
     /**
      * Create the application, and persist the application Context
@@ -51,6 +58,7 @@ public class MinimalBible extends Application {
     public void onCreate() {
         //TODO: Is this necessary?
         inject(this);
+        setJswordHome();
     }
 
     /**
@@ -66,5 +74,21 @@ public class MinimalBible extends Application {
             graph = ObjectGraph.create(MinimalBibleModules.class);
         }
         return graph;
+    }
+
+    /**
+     * Notify jSword that it needs to store files in the Android internal directory
+     * NOTE: Android will uninstall these files if you uninstall MinimalBible.
+     */
+    @SuppressWarnings("null")
+    private void setJswordHome() {
+        // We need to set the download directory for jSword to stick with
+        // Android.
+        String home = MinimalBible.getAppContext().getFilesDir().toString();
+        Log.d(TAG, "Setting jsword.home to: " + home);
+        System.setProperty("jsword.home", home);
+        System.setProperty("sword.home", home);
+        SwordBookPath.setDownloadDir(new File(home));
+        Log.d(TAG, "Sword download path: " + SwordBookPath.getSwordDownloadDir());
     }
 }
