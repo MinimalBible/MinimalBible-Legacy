@@ -7,11 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
 import org.bspeice.minimalbible.activities.BaseFragment;
 import org.crosswire.jsword.book.Book;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -61,6 +64,7 @@ public class BookFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.fragment_viewer_main, container,
                 false);
         ButterKnife.inject(this, rootView);
+        mainContent.getSettings().setJavaScriptEnabled(true);
 
         // TODO: Load initial text from SharedPreferences
 
@@ -99,6 +103,38 @@ public class BookFragment extends BaseFragment {
     private void displayBook(Book b) {
         Log.d("BookFragment", b.getName());
         ((BibleViewer)getActivity()).setActionBarTitle(b.getInitials());
-        mainContent.loadData("<p><strong>" + b.getName() + "</strong></p>", "text/html", "utf-8");
+        mainContent.loadUrl(getString(R.string.content_page));
+        mainContent.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                invokeJavascript("set_content", "Hello, world.");
+            }
+        });
+
+    }
+
+    private void invokeJavascript(String function, Object arg) {
+        mainContent.loadUrl("javascript:" + function + "('" + arg.toString() + "')");
+    }
+
+    private void invokeJavascript(String function, List<Object> args) {
+        mainContent.loadUrl("javascript:" + function + "(" + joinString(",", args.toArray()) + ")");
+    }
+
+    // Convenience from http://stackoverflow.com/a/17795110/1454178
+    public static String joinString(String join, Object... strings) {
+        if (strings == null || strings.length == 0) {
+            return "";
+        } else if (strings.length == 1) {
+            return strings[0].toString();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(strings[0]);
+            for (int i = 1; i < strings.length; i++) {
+                sb.append(join).append(strings[i].toString());
+            }
+            return sb.toString();
+        }
     }
 }
