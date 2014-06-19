@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.webkit.WebView;
 
 import org.bspeice.minimalbible.MinimalBible;
 import org.bspeice.minimalbible.R;
@@ -28,8 +28,8 @@ public class BookFragment extends BaseFragment {
 
     @Inject BookManager bookManager;
 
-    @InjectView(R.id.section_label)
-    TextView sectionLabel;
+    @InjectView(R.id.book_content)
+    WebView mainContent;
 
     private static final String ARG_BOOK_NAME = "book_name";
 
@@ -99,6 +99,6 @@ public class BookFragment extends BaseFragment {
     private void displayBook(Book b) {
         Log.d("BookFragment", b.getName());
         ((BibleViewer)getActivity()).setActionBarTitle(b.getInitials());
-        sectionLabel.setText(b.getName());
+        mainContent.loadData("<p><strong>" + b.getName() + "</strong></p>", "text/html", "utf-8");
     }
 }
