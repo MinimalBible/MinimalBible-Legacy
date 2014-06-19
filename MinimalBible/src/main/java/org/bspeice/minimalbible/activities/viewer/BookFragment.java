@@ -108,7 +108,7 @@ public class BookFragment extends BaseFragment {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                invokeJavascript("set_content", "Hello, world.");
+                invokeJavascript("set_content", BookFragment.this.mBook.getName());
             }
         });
 
