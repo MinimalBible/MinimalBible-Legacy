@@ -76,6 +76,10 @@ public class MinimalBible extends Application {
         return graph;
     }
 
+    public void plusObjGraph(Object... modules) {
+        graph = graph.plus(modules);
+    }
+
     /**
      * Notify jSword that it needs to store files in the Android internal directory
      * NOTE: Android will uninstall these files if you uninstall MinimalBible.
