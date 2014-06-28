@@ -1,16 +1,12 @@
-package org.bspeice.minimalbible;
+package org.bspeice.minimalbible.test;
 
-import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
-import org.crosswire.jsword.book.sword.SwordBookPath;
-
-import java.io.File;
+import org.bspeice.minimalbible.MinimalBible;
 
 import dagger.ObjectGraph;
 
-public class MinimalBible extends Application {
+public class MinimalBibleTest extends MinimalBible {
 
     /**
      * The graph used by Dagger to track dependencies
@@ -21,14 +17,14 @@ public class MinimalBible extends Application {
      * A singleton reference to the Application currently being run.
      * Used mostly so we have a fixed point to get the App Context from
      */
-	private static MinimalBible instance;
+	private static MinimalBibleTest instance;
 
-    private String TAG = "MinimalBible";
+    private String TAG = "MinimalBibleTest";
 
     /**
      * Create the application, and persist the application Context
      */
-	public MinimalBible() {
+	public MinimalBibleTest() {
 		instance = this;		
 	}
 
@@ -46,8 +42,8 @@ public class MinimalBible extends Application {
      * this, rather than {@link #getAppContext()}
      * @return The MinimalBible {@link android.app.Application} object
      */
-    public static MinimalBible getApplication() {
-        return (MinimalBible)getAppContext();
+    public static MinimalBibleTest getApplication() {
+        return instance;
     }
 
     /**
@@ -56,43 +52,24 @@ public class MinimalBible extends Application {
      */
     @Override
     public void onCreate() {
+        super.onCreate();
         //TODO: Is this necessary?
         inject(this);
-        setJswordHome();
     }
 
     /**
      * Inject a Dagger object
      * @param o The object to be injected
      */
+    @Override
     public void inject(Object o) {
         getObjGraph().inject(o);
     }
 
     public ObjectGraph getObjGraph() {
         if (graph == null) {
-            graph = ObjectGraph.create(MinimalBibleModules.class);
+            graph = ObjectGraph.create(MinimalBibleModulesTest.class);
         }
         return graph;
-    }
-
-    public void plusObjGraph(Object... modules) {
-        graph = graph.plus(modules);
-    }
-
-    /**
-     * Notify jSword that it needs to store files in the Android internal directory
-     * NOTE: Android will uninstall these files if you uninstall MinimalBible.
-     */
-    @SuppressWarnings("null")
-    private void setJswordHome() {
-        // We need to set the download directory for jSword to stick with
-        // Android.
-        String home = MinimalBible.getAppContext().getFilesDir().toString();
-        Log.d(TAG, "Setting jsword.home to: " + home);
-        System.setProperty("jsword.home", home);
-        System.setProperty("sword.home", home);
-        SwordBookPath.setDownloadDir(new File(home));
-        Log.d(TAG, "Sword download path: " + SwordBookPath.getSwordDownloadDir());
     }
 }

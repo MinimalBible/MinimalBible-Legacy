@@ -42,7 +42,7 @@ android {
     buildToolsVersion '20'
     sourceSets {
         main {
-            manifest.srcFile 'AndroidManifest.xml'
+            manifest.srcFile 'src/main/AndroidManifest.xml'
             java.srcDirs = ['src/main/java']
             resources.srcDirs = ['src/main/res']
             aidl.srcDirs = ['src']
@@ -52,7 +52,12 @@ android {
         }
 
         // Move the tests to tests/java, tests/res, etc...
-        androidTest.setRoot('src/test')
+        androidTest {
+            manifest.srcFile 'src/test/AndroidManifest.xml'
+            java.srcDirs = ['src/test/java']
+            resources.srcDirs = ['src/test/res']
+            assets.srcDirs = ['src/test/assets']
+        }
 
         // Move the build types to build-types/<type>
         // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...

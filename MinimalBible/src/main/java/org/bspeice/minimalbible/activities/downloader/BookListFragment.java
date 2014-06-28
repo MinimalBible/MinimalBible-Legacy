@@ -40,7 +40,7 @@ public class BookListFragment extends BaseFragment {
      * The fragment argument representing the section number for this fragment.
      * Not a candidate for Dart (yet) because I would have to write a Parcelable around it.
      */
-    private static final String ARG_BOOK_CATEGORY = "book_category";
+    protected static final String ARG_BOOK_CATEGORY = "book_category";
 
     private final String TAG = "BookListFragment";
 
@@ -48,9 +48,9 @@ public class BookListFragment extends BaseFragment {
     ListView downloadsAvailable;
 
     @Inject RefreshManager refreshManager;
-    @Inject DownloadPrefs downloadPrefs;
+    @Inject protected DownloadPrefs downloadPrefs;
 
-	private ProgressDialog refreshDialog;
+	protected ProgressDialog refreshDialog;
     private LayoutInflater inflater;
 
     /**
@@ -93,7 +93,7 @@ public class BookListFragment extends BaseFragment {
      * Trigger the functionality to display a list of modules. Prompts user if downloading
      * from the internet is allowable.
      */
- 	private void displayModules() {
+ 	protected void displayModules() {
 		boolean dialogDisplayed = downloadPrefs.hasShownDownloadDialog();
 		
 		if (!dialogDisplayed) {
