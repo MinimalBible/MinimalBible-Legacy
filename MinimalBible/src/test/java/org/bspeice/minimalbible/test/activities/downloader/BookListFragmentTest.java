@@ -1,41 +1,23 @@
 package org.bspeice.minimalbible.test.activities.downloader;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.ActivityUnitTestCase;
-import android.test.InstrumentationTestCase;
-import android.view.ContextThemeWrapper;
 
 import org.bspeice.minimalbible.MinimalBible;
-import org.bspeice.minimalbible.MinimalBibleModules;
-import org.bspeice.minimalbible.R;
-import org.bspeice.minimalbible.activities.downloader.ActivityDownloaderModule;
+import org.bspeice.minimalbible.test.MinimalBibleModulesTest;
 import org.bspeice.minimalbible.activities.downloader.BookListFragment;
 import org.bspeice.minimalbible.activities.downloader.DownloadActivity;
 import org.bspeice.minimalbible.activities.downloader.DownloadPrefs;
 import org.crosswire.jsword.book.BookCategory;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
 
 import dagger.Module;
-import dagger.ObjectGraph;
-import dagger.Provides;
 import de.devland.esperandro.Esperandro;
-
-import static com.jayway.awaitility.Awaitility.await;
 
 /**
  * Created by bspeice on 6/23/14.
@@ -43,7 +25,7 @@ import static com.jayway.awaitility.Awaitility.await;
 public class BookListFragmentTest extends ActivityInstrumentationTestCase2<DownloadActivity> {
 
     @Module(injects = TestDialogDisplayedIfFirstTimeFragment.class,
-            addsTo = ActivityDownloaderModule.class
+            addsTo = MinimalBibleModulesTest.class
     )
     protected static class BookListFragmentTestModule{}
 
