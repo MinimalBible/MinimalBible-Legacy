@@ -16,4 +16,12 @@ import dagger.Module;
     }
 )
 public class MinimalBibleModules {
+
+    private MinimalBibleModules() {}
+
+    public static Object[] list() {
+        return new Object[] {
+                MinimalBibleModules.class
+        };
+    }
 }

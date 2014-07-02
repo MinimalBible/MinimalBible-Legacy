@@ -10,7 +10,7 @@ import java.io.File;
 
 import dagger.ObjectGraph;
 
-public class MinimalBible extends Application {
+public class MinimalBible extends Application implements Injectable {
 
     /**
      * The graph used by Dagger to track dependencies
@@ -71,13 +71,14 @@ public class MinimalBible extends Application {
 
     public ObjectGraph getObjGraph() {
         if (graph == null) {
-            graph = ObjectGraph.create(MinimalBibleModules.class);
+            graph = ObjectGraph.create(getModules());
         }
         return graph;
     }
 
-    public void plusObjGraph(Object... modules) {
-        graph = graph.plus(modules);
+    @Override
+    public Object[] getModules() {
+        return MinimalBibleModules.list();
     }
 
     /**
