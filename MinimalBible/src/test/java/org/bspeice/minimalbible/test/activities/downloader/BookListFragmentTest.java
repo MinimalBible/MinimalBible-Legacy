@@ -8,10 +8,10 @@ import android.support.v4.app.FragmentManager;
 import android.test.ActivityInstrumentationTestCase2;
 
 import org.bspeice.minimalbible.MinimalBible;
-import org.bspeice.minimalbible.test.MinimalBibleModulesTest;
 import org.bspeice.minimalbible.activities.downloader.BookListFragment;
 import org.bspeice.minimalbible.activities.downloader.DownloadActivity;
 import org.bspeice.minimalbible.activities.downloader.DownloadPrefs;
+import org.bspeice.minimalbible.test.MinimalBibleModulesTest;
 import org.crosswire.jsword.book.BookCategory;
 
 import java.util.concurrent.CountDownLatch;
@@ -89,17 +89,29 @@ public class BookListFragmentTest extends ActivityInstrumentationTestCase2<Downl
     }
 
     public void testDialogDisplayedIfFirstTime() {
-        /*
-         SharedPreferences prefs = getActivity()
-                .getSharedPreferences("DownloadPrefs", Context.MODE_PRIVATE);
-        prefs.edit().putBoolean("hasShownDownloadDialog", false);
-        */
         ((MinimalBible)getActivity().getApplication()).plusObjGraph(BookListFragmentTestModule.class);
         TestDialogDisplayedIfFirstTimeFragment f = new TestDialogDisplayedIfFirstTimeFragment();
         f.setArgs(BookCategory.BIBLE);
         startFragment(f);
 
+        DownloadPrefs prefs = Esperandro.getPreferences(DownloadPrefs.class, getActivity());
+        prefs.hasShownDownloadDialog(false);
+
         assertNotNull(f);
         assertTrue(f.callDisplayModules(Esperandro.getPreferences(DownloadPrefs.class, getActivity())));
+    }
+
+    public void testRefreshDisplayedAfterFirstTime() {
+        ((MinimalBible)getActivity().getApplication()).plusObjGraph(BookListFragmentTestModule.class);
+
+        TestDialogDisplayedIfFirstTimeFragment f = new TestDialogDisplayedIfFirstTimeFragment();
+        f.setArgs(BookCategory.BIBLE);
+        startFragment(f);
+
+        DownloadPrefs prefs = Esperandro.getPreferences(DownloadPrefs.class, getActivity());
+        prefs.hasShownDownloadDialog(true);
+
+        assertNotNull(f);
+        assertFalse(f.callDisplayModules(Esperandro.getPreferences(DownloadPrefs.class, getActivity())));
     }
 }
