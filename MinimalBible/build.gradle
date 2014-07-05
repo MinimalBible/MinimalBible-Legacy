@@ -1,0 +1,83 @@
+apply plugin: 'android'
+apply plugin: 'android-apt'
+//apply plugin: 'retrolambda'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2+'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(path: ':jsword-minimalbible', configuration: 'buildJSword')
+    compile project(':appcompat_v7')
+    apt 'com.squareup.dagger:dagger-compiler:1.2.0'
+    compile 'com.squareup.dagger:dagger:1.2.0'
+    apt 'com.jakewharton:butterknife:5.0.1'
+    compile 'com.jakewharton:butterknife:5.0.1'
+    compile 'de.devland.esperandro:esperandro-api:1.1.2'
+    apt 'de.devland.esperandro:esperandro:1.1.2'
+    // compile 'com.f2prateek.dart:dart:1.1.0'
+    compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+    compile 'com.netflix.rxjava:rxjava-android:0.19.0'
+
+    // Handled by appcompat
+    // compile 'com.google.android:support-v4:r7'
+
+    // And our unit testing needs some specific stuff (and specific stuff included again)
+    androidTestCompile 'junit:junit:4.11+'
+    androidTestCompile 'com.jayway.awaitility:awaitility:1.6.0'
+    androidTestProvided 'com.squareup.dagger:dagger-compiler:1.2.0'
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '20'
+    sourceSets {
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java.srcDirs = ['src/main/java']
+            resources.srcDirs = ['src/main/res']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['src/main/res']
+            assets.srcDirs = ['src/main/assets']
+        }
+
+        // Move the tests to tests/java, tests/res, etc...
+        androidTest {
+            manifest.srcFile 'src/test/AndroidManifest.xml'
+            java.srcDirs = ['src/test/java']
+            resources.srcDirs = ['src/test/res']
+            assets.srcDirs = ['src/test/assets']
+        }
+
+        // Move the build types to build-types/<type>
+        // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
+        // This moves them out of them default location under src/<type>/... which would
+        // conflict with src/ being used by the main source set.
+        // Adding new build types or product flavors should be accompanied
+        // by a similar customization.
+        debug.setRoot('build-types/debug')
+        release.setRoot('build-types/release')
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
